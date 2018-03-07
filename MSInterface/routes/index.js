@@ -2,17 +2,21 @@ var express = require('express');
 var log4js = require('log4js');
 var logger = log4js.getLogger('normal');
 var router = express.Router();
-
-var test = require('../lib/test');
+var fs = require("fs")
+// test = require('../lib/test');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
     res.send("welcome node.js !");
 });
 
-router.all('/test', function(req, res, next) {
-    testCommand(req, res, test, function (command) {
-        test[command](req, function(sendResponse){
+router.use('*', function(req, res, next) {
+    // console.log(req.originalUrl); // '/admin/new'
+    // console.log(req.baseUrl); // '/admin'
+    // console.log(req.path); // '/new'
+    // console.log(req.baseUrl.split("/")); // '/new'
+    testCommand(req, res, function (moudle, interface) {
+        moudle[interface](req, function(sendResponse){
             sendRes(sendResponse, res);
         });
     })
@@ -21,29 +25,36 @@ router.all('/test', function(req, res, next) {
 module.exports = router;
 
 
-var testCommand = function (req, res, libName, callback) {
+var testCommand = function (req, res, callback) {
     // console.log("bbb --->>> ", req);
     if (req.method == "POST") {
-        var command = req.body.command;
         logger.debug("req.body:", req.body);
         logger.debug("req.query:", req.query);
         logger.debug("req.files:", req.files);
     }
     else {
-        var command = req.query.command;
         logger.debug("req.query:", req.query);
     }
-    logger.debug("command:", command);
-    if (command == null) {
-        sendRes({code: '10000',message: "参数错误，没有command啊，亲！"}, res);
+    var arr = req.baseUrl.slice(1).split("/");
+    if (arr.length < 2) {
+        sendRes({code: '10000',message: "参数错误，path/文件名/接口名，亲！"}, res);
     }
     else {
-        if (libName[command] == null) {
-            logger.warn({code: 2000, message: '命令不存在'} + ":" + req.url + ":" + req.query);
-            sendRes({code: 2000, message: '命令不存在'} , res);
-        } else {
-            callback(command);
-        }
+        fs.exists('./lib/' + arr[0] + '.js', function(exists) {
+            if (exists) {
+                var moudle = require('../lib/' + arr[0]);
+                if (moudle[arr[1]] == null) {
+                    logger.warn({code: 2000, message: '接口命令不存在，path/文件名/接口名，亲！'} + ":" + req.url + ":" + req.query);
+                    sendRes({code: 2000, message: '接口命令不存在，path/文件名/接口名，亲！'} , res);
+                }
+                else {
+                    callback(moudle, arr[1]);
+                }
+            }
+            else {
+                sendRes({code: '10000',message: "文件名错误，path/文件名/接口名，亲！"}, res);
+            }
+        });
     }
 };
 
