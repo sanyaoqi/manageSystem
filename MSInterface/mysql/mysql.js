@@ -21,6 +21,7 @@ function connect () {
     MySQL.prototype.db = mysql.createConnection(config);
     MySQL.prototype.db.connect(handleError);
     MySQL.prototype.db.on('error', handleError);
+    console.log("连接MySQL数据库...");
 }
 
 connect();
