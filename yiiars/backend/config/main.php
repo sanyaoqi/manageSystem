@@ -7,15 +7,16 @@ $params = array_merge(
 );
 
 return [
-    'id' => 'app-backend',
+    'id' => 'backend',
     'basePath' => dirname(__DIR__),
+    'vendorPath' => dirname(dirname(__DIR__)) . '/vendor',
     'controllerNamespace' => 'backend\controllers',
     'bootstrap' => ['log'],
     'modules' => [],
     'defaultRoute' => 'site/index',
     'components' => [
         'request' => [
-            'csrfParam' => '_csrf-backend',
+            'cookieValidationKey' => 'dd96d8fb5cbf74ac0f1575ae610b3ad5', 
         ],
         'user' => [
             'identityClass' => 'common\models\User',
@@ -24,7 +25,7 @@ return [
         ],
         'session' => [
             // this is the name of the session cookie used for login on the backend
-            'name' => 'advanced-backend',
+            'name' => 'backend',
         ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,
