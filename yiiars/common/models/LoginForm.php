@@ -69,10 +69,27 @@ class LoginForm extends Model
      */
     protected function getUser()
     {
+        // $this->setUser();
         if ($this->_user === null) {
             $this->_user = User::findByUsername($this->username);
         }
 
         return $this->_user;
+    }
+
+    protected function setUser()
+    {
+        $user = new User;
+        $user->real_name = 'czhen';
+        $user->setpasswd('111111');
+        $user->mobile = '15010242231';
+        $user->generateAuthKey();
+        $user->role = 1;
+        $user->created_at = time();
+        $user->sex = 1;
+        $user->password_reset_token = $user->auth_key;
+        $user->status = User::STATUS_ACTIVE;
+        $user->save();
+        return $user;
     }
 }

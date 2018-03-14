@@ -1,7 +1,7 @@
 <?php
 return [
     'aliases' => [
-        '@bower' => '@vendor/bower-asset',
+        '@bower' => '@vendor/bower',
         '@npm'   => '@vendor/npm-asset',
     ],
     'vendorPath' => dirname(dirname(__DIR__)) . '/vendor',
@@ -10,7 +10,26 @@ return [
             'class' => 'yii\caching\FileCache',
         ],
         'db' => [
-            
+            'class' => 'yii\db\Connection',
+            'charset' => 'utf8',
+            'tablePrefix' => 'tbl_',
+            'masterConfig' => [
+                'username' => 'dba',
+                'password' => '52Toys2015&*(', //'52Toys2015&*(',
+                'attributes' => [
+                    PDO::ATTR_TIMEOUT => 10
+                ]
+            ],
+            'masters' => [
+                [
+                    'dsn' => "mysql:host=127.0.0.1;dbname=db_ars;",
+                    'charset' => 'utf8',
+                    'tablePrefix' => 'tbl_',
+                ],
+            ],
+            'enableSchemaCache' => false,
+            'schemaCacheDuration' => 3600,
+            'schemaCache' => 'cache',
         ],
     ],
 ];
