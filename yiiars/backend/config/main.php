@@ -6,7 +6,11 @@ $params = array_merge(
     require __DIR__ . '/params-local.php'
 );
 
+<<<<<<< HEAD
 $config = [
+=======
+return [
+>>>>>>> 6e2893a519f09d39667c33cb5062c708fa58566b
     'id' => 'backend',
     'basePath' => dirname(__DIR__),
     'vendorPath' => dirname(dirname(__DIR__)) . '/vendor',
@@ -49,6 +53,7 @@ $config = [
     ],
     'params' => $params,
 ];
+<<<<<<< HEAD
 if (YII_ENV_DEV) {
     $config['bootstrap'][] = 'gii';
     $config['modules']['gii'] = [
@@ -58,3 +63,5 @@ if (YII_ENV_DEV) {
 }
 // var_dump($config);exit;
 return $config;
+=======
+>>>>>>> 6e2893a519f09d39667c33cb5062c708fa58566b

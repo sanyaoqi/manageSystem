@@ -69,13 +69,17 @@ class LoginForm extends Model
      */
     protected function getUser()
     {
+<<<<<<< HEAD
         // $this->setUser();
+=======
+>>>>>>> 6e2893a519f09d39667c33cb5062c708fa58566b
         if ($this->_user === null) {
             $this->_user = User::findByUsername($this->username);
         }
 
         return $this->_user;
     }
+<<<<<<< HEAD
 
     protected function setUser()
     {
@@ -92,4 +96,6 @@ class LoginForm extends Model
         $user->save();
         return $user;
     }
+=======
+>>>>>>> 6e2893a519f09d39667c33cb5062c708fa58566b
 }
