@@ -11,29 +11,18 @@ use yii\web\IdentityInterface;
  * User model
  *
  * @property integer $id
-<<<<<<< HEAD
  * @property string $mobile
  * @property string $passwd_hash
-=======
- * @property string $username
- * @property string $password_hash
->>>>>>> 6e2893a519f09d39667c33cb5062c708fa58566b
  * @property string $password_reset_token
  * @property string $email
  * @property string $auth_key
  * @property integer $status
  * @property integer $created_at
-<<<<<<< HEAD
  * @property string $passwd write-only passwd
-=======
- * @property integer $updated_at
- * @property string $password write-only password
->>>>>>> 6e2893a519f09d39667c33cb5062c708fa58566b
  */
 class User extends ActiveRecord implements IdentityInterface
 {
     const STATUS_DELETED = 0;
-<<<<<<< HEAD
     const STATUS_ACTIVE = 1;
 
     public function attributeLabels()
@@ -56,41 +45,25 @@ class User extends ActiveRecord implements IdentityInterface
             'status' => Yii::t('common', 'Status'),
         ];
     }
-=======
-    const STATUS_ACTIVE = 10;
-
->>>>>>> 6e2893a519f09d39667c33cb5062c708fa58566b
 
     /**
      * {@inheritdoc}
      */
     public static function tableName()
     {
-<<<<<<< HEAD
         // return '{{%user}}';
-=======
->>>>>>> 6e2893a519f09d39667c33cb5062c708fa58566b
         return '{{%user}}';
     }
 
     /**
      * {@inheritdoc}
      */
-<<<<<<< HEAD
     // public function behaviors()
     // {
     //     return [
     //         TimestampBehavior::className(),
     //     ];
     // }
-=======
-    public function behaviors()
-    {
-        return [
-            TimestampBehavior::className(),
-        ];
-    }
->>>>>>> 6e2893a519f09d39667c33cb5062c708fa58566b
 
     /**
      * {@inheritdoc}
@@ -98,7 +71,6 @@ class User extends ActiveRecord implements IdentityInterface
     public function rules()
     {
         return [
-<<<<<<< HEAD
             [['passwd'], 'required'],
             [['fingerprint', 'created_at', 'role', 'status'], 'integer'],
             [['email', 'passwd', 'ic_card'], 'string', 'max' => 64],
@@ -107,8 +79,6 @@ class User extends ActiveRecord implements IdentityInterface
             [['sex'], 'string', 'max' => 2],
             [['id_card'], 'string', 'max' => 30],
             [['auth_key', 'password_reset_token', 'access_token'], 'string', 'max' => 128],
-=======
->>>>>>> 6e2893a519f09d39667c33cb5062c708fa58566b
             ['status', 'default', 'value' => self::STATUS_ACTIVE],
             ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_DELETED]],
         ];
@@ -119,11 +89,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public static function findIdentity($id)
     {
-<<<<<<< HEAD
         return static::findOne(['uid' => $id, 'status' => self::STATUS_ACTIVE]);
-=======
-        return static::findOne(['id' => $id, 'status' => self::STATUS_ACTIVE]);
->>>>>>> 6e2893a519f09d39667c33cb5062c708fa58566b
     }
 
     /**
@@ -135,7 +101,6 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /**
-<<<<<<< HEAD
      * Finds user by mobile
      *
      * @param string $mobile
@@ -155,31 +120,11 @@ class User extends ActiveRecord implements IdentityInterface
      * Finds user by passwd reset token
      *
      * @param string $token passwd reset token
-=======
-     * Finds user by username
-     *
-     * @param string $username
-     * @return static|null
-     */
-    public static function findByUsername($username)
-    {
-        return static::findOne(['username' => $username, 'status' => self::STATUS_ACTIVE]);
-    }
-
-    /**
-     * Finds user by password reset token
-     *
-     * @param string $token password reset token
->>>>>>> 6e2893a519f09d39667c33cb5062c708fa58566b
      * @return static|null
      */
     public static function findByPasswordResetToken($token)
     {
-<<<<<<< HEAD
         if (!static::ispasswdResetTokenValid($token)) {
-=======
-        if (!static::isPasswordResetTokenValid($token)) {
->>>>>>> 6e2893a519f09d39667c33cb5062c708fa58566b
             return null;
         }
 
@@ -190,15 +135,9 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /**
-<<<<<<< HEAD
      * Finds out if passwd reset token is valid
      *
      * @param string $token passwd reset token
-=======
-     * Finds out if password reset token is valid
-     *
-     * @param string $token password reset token
->>>>>>> 6e2893a519f09d39667c33cb5062c708fa58566b
      * @return bool
      */
     public static function isPasswordResetTokenValid($token)
@@ -237,7 +176,6 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /**
-<<<<<<< HEAD
      * Validates passwd
      *
      * @param string $passwd passwd to validate
@@ -256,26 +194,6 @@ class User extends ActiveRecord implements IdentityInterface
     public function setpasswd($passwd)
     {
         $this->passwd = Yii::$app->security->generatePasswordHash($passwd);
-=======
-     * Validates password
-     *
-     * @param string $password password to validate
-     * @return bool if password provided is valid for current user
-     */
-    public function validatePassword($password)
-    {
-        return Yii::$app->security->validatePassword($password, $this->password_hash);
-    }
-
-    /**
-     * Generates password hash from password and sets it to the model
-     *
-     * @param string $password
-     */
-    public function setPassword($password)
-    {
-        $this->password_hash = Yii::$app->security->generatePasswordHash($password);
->>>>>>> 6e2893a519f09d39667c33cb5062c708fa58566b
     }
 
     /**
@@ -287,29 +205,17 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /**
-<<<<<<< HEAD
      * Generates new passwd reset token
      */
     public function generatepasswdResetToken()
-=======
-     * Generates new password reset token
-     */
-    public function generatePasswordResetToken()
->>>>>>> 6e2893a519f09d39667c33cb5062c708fa58566b
     {
         $this->password_reset_token = Yii::$app->security->generateRandomString() . '_' . time();
     }
 
     /**
-<<<<<<< HEAD
      * Removes passwd reset token
      */
     public function removepasswdResetToken()
-=======
-     * Removes password reset token
-     */
-    public function removePasswordResetToken()
->>>>>>> 6e2893a519f09d39667c33cb5062c708fa58566b
     {
         $this->password_reset_token = null;
     }

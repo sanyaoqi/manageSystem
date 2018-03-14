@@ -1,11 +1,7 @@
 <?php
 return [
     'aliases' => [
-<<<<<<< HEAD
         '@bower' => '@vendor/bower',
-=======
-        '@bower' => '@vendor/bower-asset',
->>>>>>> 6e2893a519f09d39667c33cb5062c708fa58566b
         '@npm'   => '@vendor/npm-asset',
     ],
     'vendorPath' => dirname(dirname(__DIR__)) . '/vendor',
@@ -14,7 +10,6 @@ return [
             'class' => 'yii\caching\FileCache',
         ],
         'db' => [
-<<<<<<< HEAD
             'class' => 'yii\db\Connection',
             'charset' => 'utf8',
             'tablePrefix' => 'tbl_',
@@ -35,9 +30,6 @@ return [
             'enableSchemaCache' => false,
             'schemaCacheDuration' => 3600,
             'schemaCache' => 'cache',
-=======
-            
->>>>>>> 6e2893a519f09d39667c33cb5062c708fa58566b
         ],
     ],
 ];
