@@ -25,6 +25,11 @@ class User extends ActiveRecord implements IdentityInterface
     const STATUS_DELETED = 0;
     const STATUS_ACTIVE = 1;
 
+    const ROLE_MEMBER = 0;      //成员
+    const ROLE_ADMIN = 1;       //管理员
+    const ROLE_EDITOR = 2;      //编辑
+
+
     public function attributeLabels()
     {
         return [
@@ -218,5 +223,20 @@ class User extends ActiveRecord implements IdentityInterface
     public function removepasswdResetToken()
     {
         $this->password_reset_token = null;
+    }
+
+    public function roleName()
+    {
+        $roles = static::roleList();
+        return (isset($roles[$this->role])) ? $roles[$this->role] : '未定义角色';
+    }
+
+    public static function roleList()
+    {
+        return [
+            self::ROLE_MEMBER => Yii::t('common', 'Member'),
+            self::ROLE_ADMIN => Yii::t('common', 'Administer'),
+            self::ROLE_EDITOR => Yii::t('common', 'Editor'),
+        ];
     }
 }

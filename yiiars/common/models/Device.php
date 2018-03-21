@@ -33,9 +33,9 @@ class Device extends \yii\db\ActiveRecord
     {
         return [
             [['name'], 'required'],
-            [['name', 'status', 'created_at'], 'integer'],
-            [['info', 'config'], 'string'],
-            [['position'], 'string', 'max' => 45],
+            [[ 'status', 'created_at'], 'integer'],
+            [['info', 'config', 'name'], 'string'],
+            [['position', 'name'], 'string', 'max' => 45],
             [['data_dir'], 'string', 'max' => 1024],
         ];
     }

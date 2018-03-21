@@ -31,5 +31,17 @@ return [
             'schemaCacheDuration' => 3600,
             'schemaCache' => 'cache',
         ],
+        'i18n' => [
+            'translations' => [
+                'common' => [
+                    'class' => 'yii\i18n\PhpMessageSource',
+                    'basePath' => '@common/languages',
+                    'sourceLanguage' => 'en-US',
+                    'fileMap' => [
+                        'common' => 'common.php',
+                    ],
+                ],
+            ],
+        ],
     ],
 ];

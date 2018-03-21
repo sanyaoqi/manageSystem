@@ -8,6 +8,7 @@ $params = array_merge(
 
 $config = [
     'id' => 'backend',
+    'name' => 'Attendance Record System',
     'basePath' => dirname(__DIR__),
     'vendorPath' => dirname(dirname(__DIR__)) . '/vendor',
     'controllerNamespace' => 'backend\controllers',
@@ -53,8 +54,18 @@ if (YII_ENV_DEV) {
     $config['bootstrap'][] = 'gii';
     $config['modules']['gii'] = [
         'class' => 'yii\gii\Module',
-        'allowedIPs' => ['127.0.0.1', '::1', '192.168.0.*', '192.168.178.20'] // adjust this to your needs
+        'allowedIPs' => ['127.0.0.1', '::1', '192.168.0.*', '192.168.178.20'], // adjust this to your needs
+        'generators' => [
+            'crud' => [ //生成器名称
+                'class' => 'yii\gii\generators\crud\Generator',
+                'templates' => [ //设置我们自己的模板
+                    //模板名 => 模板路径
+                    'myCrud' => '@backend/components/gii-tpl/backend',
+                ]
+            ]
+        ],
     ];
+
 }
 // var_dump($config);exit;
 return $config;
