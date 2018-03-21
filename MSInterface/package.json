@@ -15,6 +15,7 @@
     "morgan": "~1.9.0",
     "serve-favicon": "~2.4.5",
     "edge-js": "*",
+    "baidu-aip-sdk": "*",
     "mysql": "*"
   }
 }
