@@ -6,6 +6,7 @@ use Yii;
 use common\models\User;
 use common\models\UserSearch;
 use yii\web\Controller;
+use yii\web\Response;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
@@ -23,10 +24,18 @@ class UserController extends Controller
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
-                    'delete' => ['POST'],
+                    // 'delete' => ['POST'],
                 ],
             ],
         ];
+    }
+
+    public function beforeAction($action)
+    {
+        if (in_array($this->action->id, array('upload'))) {
+            $this->enableCsrfValidation = false;
+        }
+        return parent::beforeAction($action);
     }
 
     /**
@@ -107,6 +116,62 @@ class UserController extends Controller
         $this->findModel($id)->delete();
 
         return $this->redirect(['index']);
+    }
+
+    /**
+     * 上传封面图
+     * @return [type] [description]
+     */
+    public function actionUpload()
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $res['code'] = 200;
+        $res['message'] = 'success';
+        $url = '';
+        if (Yii::$app->request->isPost){
+            $tmp_name = $_FILES['file']['tmp_name'];
+            if (file_exists($tmp_name)) {
+                preg_match('/\.([a-z]*)$/', $_FILES['file']['name'], $ext_name);
+                $new_name = md5($tmp_name).(isset($ext_name[0])?$ext_name[0] : '.png');
+                $target_file = Yii::$app->params['uploads_dir'].'images/'.$new_name;
+                if (move_uploaded_file($tmp_name, $target_file)) {
+                    $url = '/uploads/images/'.$new_name;
+                    $res['image_url'] = $url;
+                } else {
+                    $res['code'] = 404;
+                    $res['message'] = 'file save error';
+                }
+            } else {
+                $res['code'] = 404;
+                $res['message'] = 'file not found';
+                
+            }
+        } else {
+            $res['code'] = 404;
+            $res['message'] = 'need post';
+        }
+        return $res;
+    }
+
+
+    public function actionReadCard()
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        //test data
+        return [
+            'code' => 200,
+            'message' => 'success',
+            'result' => [
+                "name" => "张三",
+                "sex" => "男",
+                "nation" => "中国",
+                "birthday" => "19900111",
+                "id_num" => "1111111111111111111111111",
+                "issue" => "",
+                "begin" => "20100101",
+                "uid" => "123123123",
+            ]
+        ];
     }
 
     /**

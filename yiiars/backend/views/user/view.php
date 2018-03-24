@@ -15,20 +15,18 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => [
-            'uid',
+            [
+                'attribute' => 'cover',
+                'value' => Yii::$app->params['image_domain'].$model->cover,
+                'format' => ['image',['width'=>'100']],
+            ],
             'email:email',
             'mobile',
-            'passwd',
             'real_name',
             'sex',
             'id_card',
             'fingerprint',
             'ic_card',
-            'created_at',
-            'role',
-            'auth_key',
-            'password_reset_token',
-            'access_token',
             'status',
         ],
     ]) ?>
