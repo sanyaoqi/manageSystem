@@ -26,7 +26,7 @@ module.exports = router;
 
 
 var testCommand = function (req, res, callback) {
-    // console.log("bbb --->>> ", req);
+    console.log("bbb --->>> ", req.method);
     if (req.method == "POST") {
         logger.debug("req.body:", req.body);
         logger.debug("req.query:", req.query);
