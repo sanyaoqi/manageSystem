@@ -36,3 +36,7 @@ exports.readIDCard = function (req, callback) {
     });
     callback(returnRight({user:"aaa"}));
 };
+
+exports.setUserPicture = function (req, callback) {
+
+};

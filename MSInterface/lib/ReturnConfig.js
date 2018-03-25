@@ -15,3 +15,8 @@ returnRight = function (result) {
 
 
 returnDBError = {code: 1000, result:"", message: "数据库错误"};
+
+
+var APP_ID = "10858660";
+var API_KEY = "ZLhxHOjbdY4VEt8VzIX9Sxv7";
+var SECRET_KEY = "mOlxnVSZ5a4xutPMpx3oGruWlUvEi6Dd";
