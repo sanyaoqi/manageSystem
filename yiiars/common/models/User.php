@@ -48,6 +48,7 @@ class User extends ActiveRecord implements IdentityInterface
             'password_reset_token' => Yii::t('common', 'Password Reset Token'),
             'access_token' => Yii::t('common', 'Access Token'),
             'status' => Yii::t('common', 'Status'),
+            'cover' => Yii::t('common', 'Cover'),
         ];
     }
 
@@ -78,6 +79,7 @@ class User extends ActiveRecord implements IdentityInterface
         return [
             [['passwd'], 'required'],
             [['fingerprint', 'created_at', 'role', 'status'], 'integer'],
+            [['cover'], 'string', 'max' => 1024],
             [['email', 'passwd', 'ic_card'], 'string', 'max' => 64],
             [['mobile'], 'string', 'max' => 11],
             [['real_name'], 'string', 'max' => 45],

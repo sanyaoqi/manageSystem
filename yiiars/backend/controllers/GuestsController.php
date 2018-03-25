@@ -4,16 +4,15 @@ namespace backend\controllers;
 
 use Yii;
 use common\models\Guests;
-use common\models\Attendance;
-use common\models\AttendanceSearch;
+use common\models\searchGuests;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
-use yii\web\Response;
+
 /**
- * AttendanceController implements the CRUD actions for Attendance model.
+ * GuestsController implements the CRUD actions for Guests model.
  */
-class AttendanceController extends Controller
+class GuestsController extends Controller
 {
     /**
      * @inheritdoc
@@ -24,28 +23,19 @@ class AttendanceController extends Controller
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
-                    // 'delete' => ['POST'],
+                    'delete' => ['POST'],
                 ],
             ],
         ];
     }
 
-
-    public function beforeAction($action)
-    {
-        if (in_array($this->action->id, array('notice'))) {
-            $this->enableCsrfValidation = false;
-        }
-        return parent::beforeAction($action);
-    }
-
     /**
-     * Lists all Attendance models.
+     * Lists all Guests models.
      * @return mixed
      */
     public function actionIndex()
     {
-        $searchModel = new AttendanceSearch();
+        $searchModel = new searchGuests();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -55,7 +45,7 @@ class AttendanceController extends Controller
     }
 
     /**
-     * Displays a single Attendance model.
+     * Displays a single Guests model.
      * @param integer $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
@@ -68,16 +58,16 @@ class AttendanceController extends Controller
     }
 
     /**
-     * Creates a new Attendance model.
+     * Creates a new Guests model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
     public function actionCreate()
     {
-        $model = new Attendance();
+        $model = new Guests();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->aid]);
+            return $this->redirect(['view', 'id' => $model->gid]);
         }
 
         return $this->render('create', [
@@ -86,7 +76,7 @@ class AttendanceController extends Controller
     }
 
     /**
-     * Updates an existing Attendance model.
+     * Updates an existing Guests model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
@@ -97,7 +87,7 @@ class AttendanceController extends Controller
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->aid]);
+            return $this->redirect(['view', 'id' => $model->gid]);
         }
 
         return $this->render('update', [
@@ -106,7 +96,7 @@ class AttendanceController extends Controller
     }
 
     /**
-     * Deletes an existing Attendance model.
+     * Deletes an existing Guests model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
@@ -119,40 +109,16 @@ class AttendanceController extends Controller
         return $this->redirect(['index']);
     }
 
-    public function actionNotice($time = 0, $aid = 0, $gid = 0)
-    {
-        Yii::$app->response->format = Response::FORMAT_JSON;
-        //test
-        $time = 0;
-        $query = Attendance::find();
-        $res = [];
-        $query->where(['>=', 'created_at', (int)$time]);
-        $query->andWhere(['>=', 'aid', (int)$aid]);
-        $query->orderBy(['aid' => SORT_DESC]);
-        $res['data'] = $query->limit(10)->all();
-
-        $query = Guests::find();
-        $query->where(['>=', 'created_at', (int)$time]);
-        $query->andWhere(['>=', 'gid', (int)$gid]);
-        $query->orderBy(['gid' => SORT_DESC]);
-        $res['guests'] =  $query->limit(10)->all();
-
-        $res['code'] = 200;
-        $res['message'] = 'success';
-        return $res;
-    }
-
-
     /**
-     * Finds the Attendance model based on its primary key value.
+     * Finds the Guests model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return Attendance the loaded model
+     * @return Guests the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = Attendance::findOne($id)) !== null) {
+        if (($model = Guests::findOne($id)) !== null) {
             return $model;
         }
 

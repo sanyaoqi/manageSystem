@@ -2,6 +2,8 @@
 return [
     'adminEmail' => 'admin@example.com',
     'breadcrumbs' => [],
+    'uploads_dir' => dirname(__DIR__).'/web/uploads/',
+    'image_domain' => 'http://www.ars.com/',
     'mainNavigation' => [
 		[
 			'name' => 'Dashboard',
@@ -33,8 +35,8 @@ return [
 					'icon' => 'fa fa-circle-o',
 				],
 				[
-					'name' => 'DATA Statistics',
-					'action' => '/attendance/data',
+					'name' => 'Guests',
+					'action' => '/guests/index',
 					'icon' => 'fa fa-circle-o',
 				],
 			],

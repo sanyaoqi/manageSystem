@@ -30,7 +30,7 @@ class Attendance extends \yii\db\ActiveRecord
     {
         return [
             [['uid', 'type', 'date'], 'required'],
-            [['uid', 'type', 'date', 'created_at'], 'integer'],
+            [['uid', 'type', 'date', 'created_at','status','did'], 'integer'],
         ];
     }
 
@@ -45,6 +45,17 @@ class Attendance extends \yii\db\ActiveRecord
             'type' => Yii::t('common', 'Type'),
             'date' => Yii::t('common', 'Date'),
             'created_at' => Yii::t('common', 'Created At'),
+            'did' => Yii::t('common', 'Did'),
+            'status' => Yii::t('common', 'Status'),
         ];
+    }
+
+    public function getUser(){
+        return $this->hasOne(User::className(), ['uid' => 'uid']);
+    }
+
+    public function getDevice()
+    {
+        return $this->hasOne(Device::className(), ['did' => 'did']);
     }
 }
