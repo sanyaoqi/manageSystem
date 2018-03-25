@@ -108,7 +108,7 @@ $(document).ready(function(){
     //定时访问
     setInterval(function(){
         if ($("#notice-container").attr('enable') == 1) {
-            getNotice();
+            // getNotice();
         }
     }, 5000);
 
