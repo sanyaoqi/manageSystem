@@ -33,9 +33,6 @@ exports.readAttMacList = function (req, callback) {
 exports.receivePicture = function (req, callback) {
     // console.log("req.body --->>>", req.body);
     var file = req.body.images;
-    var APP_ID = "10858660";
-    var API_KEY = "ZLhxHOjbdY4VEt8VzIX9Sxv7";
-    var SECRET_KEY = "mOlxnVSZ5a4xutPMpx3oGruWlUvEi6Dd";
 
     //读取待识别图像并base64编码
     var bitmap = fs.readFileSync('testImg/006.png'); // 相对于app.js
