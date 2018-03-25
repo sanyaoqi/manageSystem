@@ -31,7 +31,8 @@ exports.readAttMacList = function (req, callback) {
 
 
 exports.receivePicture = function (req, callback) {
-    var file = req.files;
+    // console.log("req.body --->>>", req.body);
+    var file = req.body.images;
     var APP_ID = "10858660";
     var API_KEY = "ZLhxHOjbdY4VEt8VzIX9Sxv7";
     var SECRET_KEY = "mOlxnVSZ5a4xutPMpx3oGruWlUvEi6Dd";
@@ -42,26 +43,60 @@ exports.receivePicture = function (req, callback) {
     var bitmap2 = fs.readFileSync('testImg/002.jpeg'); // 相对于app.js
     var base64str2 = new Buffer(bitmap2).toString('base64');
 
-    var client = new AipFace(APP_ID, API_KEY, SECRET_KEY);
-    client.multiIdentify("test_001", base64str1, {"detect_top_num": "10"}).then(function(result) {
-        console.log(result);
-        console.log(JSON.stringify(result));
-        var arr = result.result;
-        for (var i = 0; i < result.result_num; i ++) {
-            if (arr[i].scores[0] > 80) {
-                console.log(arr[i].uid, ", i see you !");
-                // 记录签到一次
+
+    var event = req.body.event;
+    // if (event == "onUpdate") {
+
+        var client = new AipFace(APP_ID, API_KEY, SECRET_KEY);
+        client.multiIdentify("test_001", file, {"detect_top_num": "10"}).then(function(result) {
+            console.log(result);
+            console.log(JSON.stringify(result));
+            var arr = result.result;
+            for (var i = 0; i < result.result_num; i ++) {
+                if (arr[i].scores[0] > 80) {
+                    console.log(arr[i].uid, ", i see you !\ni see you !\ni see you !\ni see you !\n", new Date());
+                    // 记录签到一次
+                }
+                else {
+                    // 记录陌生人来访
+                    client.detect(file, {"face_fields":"faceshape,qualities"}).then(function(result) {
+                        var arrDetect = result.result;
+                        for (var i = 0; i < result.result_num; i ++) {
+                            if (arrDetect[i].face_probability > 0.999 && arrDetect[i].blur < 0.7 && arrDetect[i].type.human > 0.999) {
+                                console.log("detect ------>>>>>>>>", result);
+                                console.log("detect ------>>>>>>>>", JSON.stringify(result));
+                                console.log("i don't know who are you !", new Date());
+                                fs.writeFile(
+                                    "./testImg/" + Math.random() + ".html",
+                                    "<html><img src='data:image/png;base64," + file + "'/></html>",
+                                    function(err) {
+                                        if(err){
+                                            console.log(err);
+                                        }else{
+                                            console.log("保存成功！");
+                                        }
+                                    });
+                            }
+                            else {
+                                console.log("花了，不算！");
+                            }
+                        }
+                    }).catch(function(err) {
+                        // 如果发生网络错误
+                        console.log(err);
+                    });
+                }
             }
-            else {
-                console.log("i don't know who are you !");
-                // 记录陌生人来访
-            }
-        }
-        callback(returnRight(result));
-    }).catch(function(err) {
+            callback(returnRight(result));
+        }).catch(function(err) {
             // 如果发生网络错误
             console.log(err);
         });
 
 
-}
+    // }
+    // else {
+    //
+    //     callback(returnDBError);
+    // }
+};
