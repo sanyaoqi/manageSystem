@@ -7,6 +7,8 @@ require("./ReturnConfig");
 var edge = require('edge-js');
 var AipFace = require('baidu-aip-sdk').face; //这个‘baidu-ai’就是上面自定义的package.json中名字
 var fs = require('fs');
+var MySQL  = require('../mysql/MySQL').MySQL;
+var mysql = new MySQL();
 
 
 exports.readIDCard = function (req, callback) {

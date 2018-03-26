@@ -2,6 +2,6 @@
 config = {
     host: 'localhost',
     user: 'root',
-    password: '123456',
+    password: 'root',
     database : 'db_ars'
 };

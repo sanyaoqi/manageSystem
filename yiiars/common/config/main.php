@@ -14,8 +14,8 @@ return [
             'charset' => 'utf8',
             'tablePrefix' => 'tbl_',
             'masterConfig' => [
-                'username' => 'dba',
-                'password' => '52Toys2015&*(', //'52Toys2015&*(',
+                'username' => 'root',
+                'password' => 'root', //'52Toys2015&*(',
                 'attributes' => [
                     PDO::ATTR_TIMEOUT => 10
                 ]
