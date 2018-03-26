@@ -17,15 +17,56 @@ exports.readAttMacList = function (req, callback) {
     });
 
 // s为传递方法传递的参数，result为方法返回的结果
-    readAtt ({"IP":"192.168.199.201","Port":"4370"}, function (error, result) {
-        if (error) console.log("error === ", error);
-        console.log("result === ", result); // Success
-        if ("1" == result)
-            console.log("aaaaaaaaaaaaaaa"); // Success
-        else
-            console.log("bbbbbbbbbbbbbbb"); // Failure
+    readAtt ({"IP": attMachineIP,"Port": attMachinePort}, function (error, result) {
+        if (error) {
+            callback(returnWrong(error));
+            return;
+        }
+        if (typeof result[0] == 'string') {
+            // 插入数据
+            this.db.query(
+                'SELECT * FROM db_ars.tbl_attendance order by aid desc limit 1;',
+                function selectCb(err, results, fields) {
+                    console.log(err, results, fields);
+                    if (err) {
+                        callback(returnWrong(err));
+                    }
+                    if(results) {
+                        var sql = "INSERT INTO `db_ars`.`tbl_attendance` (`uid`,`type`,`date`,`created_at`) VALUES ";
+                        var index = 0;
+                        if (results.length) {
+                            var att = results[0];
+                            var date = att.date;
+                            for (var i = 0; i < result.length; i ++) {
+                                var idate = new Date(result[i].date);
+                                if (idate.getTime()/1000 > att.date) {
+                                    index = i;
+                                    break;
+                                }
+                            }
+                        }
+                        for (var i = index; i < result.length; i ++) {
+                            var idate = new Date(result[i].date);
+                            sql += "(" + result[i].sdwEnrollNumble + ", " + result[i].idwVerifyMode + "," + idate.getTime()/1000 + "," + new Date().getTime()/1000 + ")";
+                            if (i != result.length - 1) {
+                                sql += ",";
+                            }
+                            else {
+                                sql += ";";
+                            }
+                        }
+                        console.log(sql);
+                    }
+                }
+            );
 
-        callback(returnRight(result));
+
+            //插入新数据（多条）：INSERT INTO `db_ars`.`tbl_attendance` (`uid`,`type`,`date`,`created_at`) VALUES(1,1,1514736000,1521646049),(2,2,1514736000,1521646049),(3,1,1514736000,1521646049);
+            callback(returnRight({}));
+        }
+        else {
+            callback(returnWrong(result.message));
+        }
     });
 };
 
@@ -45,7 +86,7 @@ exports.receivePicture = function (req, callback) {
     // if (event == "onUpdate") {
 
         var client = new AipFace(APP_ID, API_KEY, SECRET_KEY);
-        client.multiIdentify("test_001", file, {"detect_top_num": "10"}).then(function(result) {
+        client.multiIdentify(groupId, file, {"detect_top_num": "10"}).then(function(result) {
             console.log(result);
             console.log(JSON.stringify(result));
             var arr = result.result;

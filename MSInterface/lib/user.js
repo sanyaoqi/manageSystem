@@ -3,18 +3,11 @@
  */
 
 
+require("./ReturnConfig");
 var edge = require('edge-js');
-/*
- `uid` INT NOT NULL AUTO_INCREMENT,
- `email` VARCHAR(64) NULL,
- `mobile` INT(11) NULL,
- `passwd` VARCHAR(64) NOT NULL,
- `real_name` VARCHAR(45) NULL,
- `id_card` CHAR(30) NULL COMMENT '身份证号',
- `fingerprint` INT NULL COMMENT '指纹id',
- `ic_card` VARCHAR(64) NULL COMMENT 'IC卡号',
- `created_at` INT(10) NULL,
-*/
+var AipFace = require('baidu-aip-sdk').face; //这个‘baidu-ai’就是上面自定义的package.json中名字
+var fs = require('fs');
+
 
 exports.readIDCard = function (req, callback) {
     var read = edge.func({
@@ -27,16 +20,42 @@ exports.readIDCard = function (req, callback) {
 
 // s为传递方法传递的参数，result为方法返回的结果
     read ({}, function (error, result) {
-        if (error) console.log("error === ", error);
+        if (error) {
+            callback(returnWrong(error));
+            return;
+        }
+
         console.log("result === ", result); // Success
-        if ("1" == result)
-            console.log("aaaaaaaaaaaaaaa"); // Success
-        else
-            console.log("bbbbbbbbbbbbbbb"); // Failure
+        if (result.Code == '0') {
+            var json = {
+                "name":result.Name,
+                "sex":result.Sex,
+                "nation":result.Nation,
+                "birthday":result.Date,
+                "IDNum":result.IDNum,
+                "issue":result.Issue,
+                "begin":result.Begin
+            };
+            callback(returnRight(json));
+        }
+        else {
+            callback(returnWrong(result.message));
+        }
     });
-    callback(returnRight({user:"aaa"}));
 };
 
 exports.setUserPicture = function (req, callback) {
 
+    var pic = req.body.pic;
+    var uid = req.body.uid;
+
+    var client = new AipFace(APP_ID, API_KEY, SECRET_KEY);
+    client.addUser(uid, {}, groupId, pic, {"action_type": "append"}).then(function(result) {
+        console.log(result);
+        console.log(JSON.stringify(result));
+        callback(returnRight(result));
+    }).catch(function(err) {
+        // 如果发生网络错误
+        console.log(err);
+    });
 };
