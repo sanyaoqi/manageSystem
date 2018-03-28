@@ -61,3 +61,7 @@ exports.setUserPicture = function (req, callback) {
         console.log(err);
     });
 };
+
+exports.addUserToAttMac = function (req, callback) {
+    callback(returnRight({}));
+};
