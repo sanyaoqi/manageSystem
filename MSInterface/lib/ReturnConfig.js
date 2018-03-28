@@ -2,13 +2,6 @@
  * Created by ccwonline on 2018/3/9.
  */
 
-global.warnCode = {
-    adminDbError:{code:1000, message:"数据库错误"},
-    userNotExistError :{code:1001, message:"用户不存在"},
-    userHaveBeenExistError :{code:1001, message:"用户已存在"}
-
-};
-
 returnRight = function (result) {
     return {code:0, result: result, message: ""};
 };
@@ -25,5 +18,5 @@ var SECRET_KEY = "mOlxnVSZ5a4xutPMpx3oGruWlUvEi6Dd";
 
 var groupId = "test_001";
 
-var attMachineIP = "192.168.199.201";
-var attMachinePort = "4370";
+attMachineIP = "192.168.199.201";
+attMachinePort = "4370";

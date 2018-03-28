@@ -6,6 +6,8 @@ require("./ReturnConfig");
 var edge = require('edge-js');
 var AipFace = require('baidu-aip-sdk').face; //这个‘baidu-ai’就是上面自定义的package.json中名字
 var fs = require('fs');
+var MySQL  = require('../mysql/MySQL').MySQL;
+var mysql = new MySQL();
 
 exports.readAttMacList = function (req, callback) {
     var readAtt = edge.func({
@@ -22,12 +24,16 @@ exports.readAttMacList = function (req, callback) {
             callback(returnWrong(error));
             return;
         }
+        console.log("result --->>>", result);
         if (typeof result[0] == 'string') {
+            callback(returnWrong(result.message));
+        }
+        else {
             // 插入数据
-            this.db.query(
+            mysql.db.query(
                 'SELECT * FROM db_ars.tbl_attendance order by aid desc limit 1;',
                 function selectCb(err, results, fields) {
-                    console.log(err, results, fields);
+                    console.log(err, results);
                     if (err) {
                         callback(returnWrong(err));
                     }
@@ -47,7 +53,7 @@ exports.readAttMacList = function (req, callback) {
                         }
                         for (var i = index; i < result.length; i ++) {
                             var idate = new Date(result[i].date);
-                            sql += "(" + result[i].sdwEnrollNumble + ", " + result[i].idwVerifyMode + "," + idate.getTime()/1000 + "," + new Date().getTime()/1000 + ")";
+                            sql += "(" + result[i].sdwEnrollNumber + ", " + result[i].idwVerifyMode + "," + idate.getTime()/1000 + "," + new Date().getTime()/1000 + ")";
                             if (i != result.length - 1) {
                                 sql += ",";
                             }
@@ -63,9 +69,6 @@ exports.readAttMacList = function (req, callback) {
 
             //插入新数据（多条）：INSERT INTO `db_ars`.`tbl_attendance` (`uid`,`type`,`date`,`created_at`) VALUES(1,1,1514736000,1521646049),(2,2,1514736000,1521646049),(3,1,1514736000,1521646049);
             callback(returnRight({}));
-        }
-        else {
-            callback(returnWrong(result.message));
         }
     });
 };
