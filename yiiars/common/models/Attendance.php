@@ -15,6 +15,11 @@ use Yii;
  */
 class Attendance extends \yii\db\ActiveRecord
 {
+
+    const TYPE_FINGER = 0;  //指纹
+    const TYPE_FACE = 1;    //面部识别
+    const TYPE_CARD = 2;    //刷卡
+
     /**
      * @inheritdoc
      */
@@ -57,5 +62,14 @@ class Attendance extends \yii\db\ActiveRecord
     public function getDevice()
     {
         return $this->hasOne(Device::className(), ['did' => 'did']);
+    }
+
+    public function getTypes()
+    {
+        return [
+            static::TYPE_FINGER => Yii::t('common', 'Finger'),
+            static::TYPE_FACE => Yii::t('common', 'Face'),
+            static::TYPE_CARD => Yii::t('common', 'Card'),
+        ];
     }
 }

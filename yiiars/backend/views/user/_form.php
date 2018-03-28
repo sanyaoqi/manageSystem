@@ -82,7 +82,7 @@ use yii\widgets\ActiveForm;
     $(".form-group").on('click', '.read-card', function(event) {
         event.preventDefault();
         $.ajax({
-            url: '/user/read-card',
+            url: 'http://node.ars.com/user/readIDCard',
             type: 'GET',
             dataType: 'json',
             data: {type: 1},

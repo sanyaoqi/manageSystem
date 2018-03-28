@@ -33,7 +33,7 @@ class AttendanceController extends Controller
 
     public function beforeAction($action)
     {
-        if (in_array($this->action->id, array('notice'))) {
+        if (in_array($this->action->id, array('notice', 'excel'))) {
             $this->enableCsrfValidation = false;
         }
         return parent::beforeAction($action);
@@ -130,6 +130,14 @@ class AttendanceController extends Controller
         $query->andWhere(['>=', 'aid', (int)$aid]);
         $query->orderBy(['aid' => SORT_DESC]);
         $res['data'] = $query->limit(10)->all();
+        
+        foreach ($res['data'] as &$value) {
+            $user['real_name'] = isset($value->user->real_name)?$value->user->real_name : '匿名';
+            $user['cover'] = isset($value->user->cover) ? $value->user->cover : '' ; 
+            $value = $value->toArray();
+            $value['show_datetime'] = date('Y-m-d h:m:s', $value['created_at']);
+            $value['user'] = $user;
+        }
 
         $query = Guests::find();
         $query->where(['>=', 'created_at', (int)$time]);
@@ -137,11 +145,78 @@ class AttendanceController extends Controller
         $query->orderBy(['gid' => SORT_DESC]);
         $res['guests'] =  $query->limit(10)->all();
 
+        foreach ($res['guests'] as &$value) {
+            $value = $value->toArray();
+            $value['show_datetime'] = date('Y-m-d h:m:s', $value['created_at']);
+            $value['user']['real_name'] = '访客';
+        }
+
         $res['code'] = 200;
         $res['message'] = 'success';
         return $res;
     }
 
+    public function actionExcel($start_date=null, $end_date=null)
+    {
+        // var_dump($start_date,$end_date);exit;
+
+        $params = Yii::$app->request->queryParams;
+        if ($start_date){
+            $start_date = strtotime($start_date);
+        }
+        if ($end_date){
+            $end_date = strtotime($end_date);
+        }
+
+        if (empty($start_date) || empty($end_date)) {
+            $start_date = strtotime(date('day -1', time()));
+            $end_date = $start_date + 3600*24;
+        }
+        // $start_date = 0;
+
+        $query = Attendance::find();
+        $query->andWhere(['>=', 'created_at', $start_date]);
+        $query->andWhere(['<=', 'created_at', $end_date]);
+        $query->with(['user']);
+        $data = $query->all();
+        // var_dump($data);exit;
+        $types = (new Attendance)->getTypes();
+        if ($data) {
+            //下载Excel
+            header("Pragma: public");
+            header("Expires: 0");
+            header("Cache-Control:must-revalidate, post-check=0, pre-check=0");
+            header("Content-Type:application/force-download");
+            // header("Content-Type:application/vnd.ms-execl");
+            header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');  
+            header("Content-Type:application/octet-stream");
+            header("Content-Type:application/download");
+            header('Content-Disposition:attachment;filename="考勤记录"'.date('Y-m-d', time()).'.xlsx');
+            header("Content-Transfer-Encoding:binary");
+
+            $excel = new \PHPExcel();
+            $excel->getProperties()->setCreated("invoker");
+            $excel->getProperties()->setTitle('考勤记录'.date('Y-m-d H:i:s', time()));
+            $excel->getActiveSheet()->setCellValue('A1', '姓名');
+            $excel->getActiveSheet()->setCellValue('B1', '时间');
+            $excel->getActiveSheet()->setCellValue('C1', '打卡方式');
+            $i = 1;
+            foreach($data as $item){
+                ++$i;
+                /**
+                 * @var $item ShareOrderList
+                 */
+                //添加一个空格避免使用科学计数法
+                $excel->getActiveSheet()->setCellValue('A' . $i, isset($item->user->real_name)?$item->user->real_name:'匿名');
+                $excel->getActiveSheet()->setCellValue('B' . $i, date('Y-m-d h:m:s', $item->created_at));
+                $excel->getActiveSheet()->setCellValue('C' . $i, isset($types[$item->type])?$types[$item->type]:'未知方式');
+            }
+            $write = new \PHPExcel_Writer_Excel2007($excel);
+            return $write->save('php://output');
+        } else{
+            return $this->redirect('/attendance/index');
+        }
+    }
 
     /**
      * Finds the Attendance model based on its primary key value.

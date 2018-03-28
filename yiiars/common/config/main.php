@@ -5,6 +5,8 @@ return [
         '@npm'   => '@vendor/npm-asset',
     ],
     'vendorPath' => dirname(dirname(__DIR__)) . '/vendor',
+    'language' => 'zh-CN',
+    'timeZone' => 'Asia/Shanghai',
     'components' => [
         'cache' => [
             'class' => 'yii\caching\FileCache',
@@ -43,5 +45,10 @@ return [
                 ],
             ],
         ],
+        'formatter' => [
+            'dateFormat' => 'yyyy-MM-dd',
+            'timeFormat' => 'HH:mm:ss',
+            'datetimeFormat' => 'yyyy-MM-dd HH:mm:ss'
+        ]
     ],
 ];

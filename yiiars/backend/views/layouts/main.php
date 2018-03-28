@@ -39,7 +39,8 @@ AppAsset::register($this);
     <link rel="stylesheet" href="/dist/css/skins/_all-skins.min.css">
     <!-- jQuery 3 -->
     <script src="/js/jquery.min.js"></script>
-
+    <!-- Bootstrap 3.3.7 -->
+    <script src="/js/bootstrap//bootstrap.min.js"></script>
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -91,8 +92,7 @@ AppAsset::register($this);
     </div>
 </footer>
 
-<!-- Bootstrap 3.3.7 -->
-<script src="/js/bootstrap//bootstrap.min.js"></script>
+
 <!-- FastClick -->
 <script src="/js/fastclick/fastclick.js"></script>
 <!-- AdminLTE App -->

@@ -16,7 +16,8 @@ $this->params['breadcrumbs'][] = $this->title;
     }
     #notice-container {
         position: absolute;
-        height: 300px;
+        top:230px;
+        height: 360px;
         background: gray;
         width: 80%;
         opacity: 0.5;
@@ -31,30 +32,32 @@ $this->params['breadcrumbs'][] = $this->title;
 
 </style>
 <div id="notice-tpl" >
-    <div class="col-lg-3 col-xs-6 attendance-tpl">
+    <div class="col-lg-4 col-xs-6 attendance-tpl">
       <!-- small box -->
       <div class="small-box bg-green">
         <div class="inner">
-          <h3>53<sup style="font-size: 20px">%</sup></h3>
-          <p>Bounce Rate</p>
+          <h3 class="real-name">53<sup style="font-size: 20px">%</sup></h3>
+          <p class="created-at">Bounce Rate</p>
         </div>
         <div class="icon">
-          <i class="ion ion-stats-bars"></i>
+          <!-- <i class="ion ion-stats-bars"></i> -->
+          <img src="/uploads/images/nopic.jpg" class="cover" width="80px"/>
         </div>
-        <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+        <!-- <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a> -->
       </div>
     </div>
-    <div class="col-lg-3 col-xs-6 guests-tpl">
+    <div class="col-lg-4 col-xs-6 guests-tpl">
       <!-- small box -->
       <div class="small-box bg-yellow">
         <div class="inner">
-          <h3>44</h3>
-          <p>User Registrations</p>
+          <h3 class="real-name">44</h3>
+          <p class="created-at">User Registrations</p>
         </div>
         <div class="icon">
-          <i class="ion ion-person-add"></i>
+          <!-- <i class="ion ion-person-add"></i> -->
+          <img src="/uploads/images/nopic.jpg" class="cover"  width="80px" />
         </div>
-        <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+        <!-- <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a> -->
       </div>
     </div>
 </div>
@@ -63,24 +66,35 @@ $this->params['breadcrumbs'][] = $this->title;
 </div>
 
 <div class="attendance-index">
-
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
-
+    <div class="row">
+        <?php  echo $this->render('_search', ['model' => $searchModel]); ?>
+    </div>
     <p>
-        <?= Html::a(Yii::t('common', 'Create Attendance'), ['create'], ['class' => 'btn btn-success']) ?>
+        <!-- <?= Html::a(Yii::t('common', 'Create Attendance'), ['create'], ['class' => 'btn btn-success']) ?> -->
     </p>
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
+            // ['class' => 'yii\grid\SerialColumn'],
 
-            'aid',
+            // 'aid',
             'uid',
+            'user.real_name',
             'type',
-            'date',
-            'created_at',
+            [
+                'attribute' => 'type',
+                'value' => function ($model) {
+                    if (isset($model->getTypes()[$model->type])) {
+                        return $model->getTypes()[$model->type];
+                    } else {
+                        return '未知方式';
+                    }
+                },
+            ],
+            'date:date',
+            'created_at:datetime',
 
             ['class' => 'yii\grid\ActionColumn'],
         ],
@@ -108,7 +122,7 @@ $(document).ready(function(){
     //定时访问
     setInterval(function(){
         if ($("#notice-container").attr('enable') == 1) {
-            // getNotice();
+            getNotice();
         }
     }, 5000);
 
@@ -160,8 +174,16 @@ $(document).ready(function(){
         var template = $("#notice-tpl").find('.attendance-tpl').clone();
         var container = $("#notice-container");
         for (var i = data.length - 1; i >= 0; i--) {
-            console.log(i);
-            container.append(template.clone());
+            console.log(data[i].user.real_name);
+            var item = template.clone();
+            item.find(".real-name").text(data[i].user.real_name);
+            item.find(".created-at").text(data[i].show_datetime);
+            if (data[i].user.cover != '') {
+                item.find(".cover").attr({
+                    src: data[i].user.cover,
+                });
+            }
+            container.append(item);
         }
         
     }
@@ -172,7 +194,15 @@ $(document).ready(function(){
         var template = $("#notice-tpl").find('.guests-tpl').clone();
         var container = $("#notice-container");
         for (var i = data.length - 1; i >= 0; i--) {
-            container.append(template.clone());
+            var item = template.clone();
+            item.find(".real-name").text(data[i].user.real_name);
+            item.find(".created-at").text(data[i].show_datetime);
+            if (data[i].user.cover != '') {
+                item.find(".cover").attr({
+                    src: data[i].image,
+                });
+            }
+            container.append(item);
         }
     }
 
