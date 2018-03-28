@@ -76,6 +76,15 @@ class UserController extends Controller
         $model = new User();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            //http://node.ars.com/user/addUserToAttMac
+            $url = 'http://node.ars.com/user/addUserToAttMac';
+            $params = [
+                'uid' => $model->uid,
+                'passwd' => '',
+                'role' => 0,
+                'is_open' => 1, 
+            ];
+            \common\models\Device::callCurl($url, $params, 'POST');
             return $this->redirect(['view', 'id' => $model->uid]);
         }
 

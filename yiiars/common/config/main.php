@@ -8,16 +8,16 @@ return [
     'language' => 'zh-CN',
     'timeZone' => 'Asia/Shanghai',
     'components' => [
-        'cache' => [
-            'class' => 'yii\caching\FileCache',
-        ],
+        // 'cache' => [
+        //     'class' => 'yii\caching\FileCache',
+        // ],
         'db' => [
             'class' => 'yii\db\Connection',
             'charset' => 'utf8',
             'tablePrefix' => 'tbl_',
             'masterConfig' => [
-                'username' => 'root',
-                'password' => 'root', //'52Toys2015&*(',
+                'username' => 'dba',
+                'password' => '52Toys2015&*(', //'52Toys2015&*(',
                 'attributes' => [
                     PDO::ATTR_TIMEOUT => 10
                 ]
