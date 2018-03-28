@@ -80,9 +80,10 @@ class UserController extends Controller
             $url = 'http://node.ars.com/user/addUserToAttMac';
             $params = [
                 'uid' => $model->uid,
+                'username' => $model->real_name,
                 'passwd' => '',
-                'role' => 0,
-                'is_open' => 1, 
+                'privilege' => $model->role,
+                'enable' => true, 
             ];
             \common\models\Device::callCurl($url, $params, 'POST');
             return $this->redirect(['view', 'id' => $model->uid]);
