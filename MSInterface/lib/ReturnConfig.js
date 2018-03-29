@@ -12,11 +12,13 @@ returnWrong = function (message) {
 returnDBError = {code: 1000, result:"", message: "数据库错误"};
 
 
-var APP_ID = "10858660";
-var API_KEY = "ZLhxHOjbdY4VEt8VzIX9Sxv7";
-var SECRET_KEY = "mOlxnVSZ5a4xutPMpx3oGruWlUvEi6Dd";
+APP_ID = "10858660";
+API_KEY = "ZLhxHOjbdY4VEt8VzIX9Sxv7";
+SECRET_KEY = "mOlxnVSZ5a4xutPMpx3oGruWlUvEi6Dd";
 
-var groupId = "test_001";
+groupId = "test_001";
 
 attMachineIP = "192.168.199.201";
 attMachinePort = "4370";
+
+imagePath = "http://localhost:9200/images/";
