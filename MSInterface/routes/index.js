@@ -61,5 +61,6 @@ var testCommand = function (req, res, callback) {
 //发送数据
 var sendRes = function(sendResponse, res){
     logger.debug('result -->>',sendResponse);
+    console.log('result -->>',sendResponse);
     res.send(sendResponse);
 };

@@ -6,7 +6,7 @@ returnRight = function (result) {
     return {code:200, result: result, message: ""};
 };
 returnWrong = function (message) {
-    return {code:1, result: {}, message: message};
+    return {code:1, result: "", message: message};
 };
 
 returnDBError = {code: 1000, result:"", message: "数据库错误"};
