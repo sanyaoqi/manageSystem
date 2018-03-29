@@ -34,13 +34,14 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'created_at')->textInput() ?>
 
-    <?= $form->field($model, 'role')->textInput() ?>
+    <!-- <?= $form->field($model, 'role')->textInput() ?> -->
 
    <!-- <?= $form->field($model, 'auth_key')->textInput(['maxlength' => true]) ?> -->
 
-    <?= $form->field($model, 'password_reset_token')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'access_token')->textInput(['maxlength' => true]) ?>
+    <!-- <?= $form->field($model, 'password_reset_token')->textInput(['maxlength' => true]) ?> -->
+
+    <!-- <?= $form->field($model, 'access_token')->textInput(['maxlength' => true]) ?> -->
 
     <?= $form->field($model, 'status')->textInput() ?>
 
@@ -94,7 +95,6 @@ use yii\widgets\ActiveForm;
                 $("#user-ic_card").val(user_info.IDNum);
                 $("#user-real_name").val(user_info.name);
                 $("#user-sex").val(user_info.sex);
-
                 console.log(user_info);
             }
         })

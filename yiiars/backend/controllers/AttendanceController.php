@@ -123,7 +123,7 @@ class AttendanceController extends Controller
     {
         Yii::$app->response->format = Response::FORMAT_JSON;
         //test
-        $time = 0;
+        // $time = 0;
         $query = Attendance::find();
         $res = [];
         $query->where(['>=', 'created_at', (int)$time]);
@@ -131,12 +131,16 @@ class AttendanceController extends Controller
         $query->orderBy(['aid' => SORT_DESC]);
         $res['data'] = $query->limit(10)->all();
         
-        foreach ($res['data'] as &$value) {
+        foreach ($res['data'] as $key => &$value) {
+            if ($key == 0) {
+                $aid = $value->aid;
+            }
             $user['real_name'] = isset($value->user->real_name)?$value->user->real_name : '匿名';
             $user['cover'] = isset($value->user->cover) ? $value->user->cover : '' ; 
             $value = $value->toArray();
             $value['show_datetime'] = date('Y-m-d h:m:s', $value['created_at']);
             $value['user'] = $user;
+            
         }
 
         $query = Guests::find();
@@ -145,14 +149,20 @@ class AttendanceController extends Controller
         $query->orderBy(['gid' => SORT_DESC]);
         $res['guests'] =  $query->limit(10)->all();
 
-        foreach ($res['guests'] as &$value) {
+        foreach ($res['guests'] as $key => &$value) {
+            if ($key == 0) {
+                $gid = $value->gid;
+            }
             $value = $value->toArray();
             $value['show_datetime'] = date('Y-m-d h:m:s', $value['created_at']);
             $value['user']['real_name'] = '访客';
+            
         }
 
         $res['code'] = 200;
         $res['message'] = 'success';
+        $res['aid'] = $aid;
+        $res['gid'] = $gid;
         return $res;
     }
 
@@ -218,6 +228,12 @@ class AttendanceController extends Controller
         }
     }
 
+    public function actionSync()
+    {
+        $url = 'http://node.ars.com//attendence/readAttMacList';
+        \common\models\Device::callCurl($url, [], 'POST');
+        return $this->redirect(['index']);
+    }
     /**
      * Finds the Attendance model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.

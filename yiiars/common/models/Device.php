@@ -3,6 +3,7 @@
 namespace common\models;
 
 use Yii;
+use yii\base\Exception;
 
 /**
  * This is the model class for table "{{%device}}".
@@ -55,5 +56,33 @@ class Device extends \yii\db\ActiveRecord
             'data_dir' => Yii::t('common', 'Data Dir'),
             'config' => Yii::t('common', 'Config'),
         ];
+    }
+
+    /**
+     * [callCurl description]
+     * @param  [type] $url    [description]
+     * @param  [type] $params [description]
+     * @param  string $method [description]
+     * @return [type]         [description]
+     */
+    public static function callCurl($url, $params, $method='GET')
+    {
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_URL,$url);
+        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
+        curl_setopt($curl, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $params);
+        $res = curl_exec($curl);
+        if (curl_errno($curl)) {
+            throw new Exception(curl_error($curl), 0);
+        } else {
+            $httpStatusCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+            if (200 !== $httpStatusCode) {
+                throw new Exception($res, $httpStatusCode);
+            }
+        }
+        curl_close($curl);
+        return $res;
     }
 }
