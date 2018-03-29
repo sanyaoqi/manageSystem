@@ -75,18 +75,27 @@ class UserController extends Controller
     {
         $model = new User();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            //http://node.ars.com/user/addUserToAttMac
-            $url = 'http://node.ars.com/user/addUserToAttMac';
-            $params = [
-                'uid' => $model->uid,
-                'username' => $model->real_name,
-                'passwd' => '',
-                'privilege' => $model->role,
-                'enable' => true, 
-            ];
-            \common\models\Device::callCurl($url, $params, 'POST');
-            return $this->redirect(['view', 'id' => $model->uid]);
+        if ($model->load(Yii::$app->request->post())) {
+            $model->setpasswd($model->passwd);
+            if ($model->save()) {
+                //http://node.ars.com/user/addUserToAttMac
+                $url = 'http://node.ars.com/user/addUserToAttMac';
+                $params = [
+                    'uid' => $model->uid,
+                    'username' => $model->real_name,
+                    'passwd' => '',
+                    'privilege' => $model->role,
+                    'enable' => true, 
+                ];
+                \common\models\Device::callCurl($url, $params, 'POST');
+                $url = 'http://node.ars.com/user/setUserPicture';
+                $params = [
+                    'uid' => $model->uid,
+                    'pic' => $model->cover,
+                ];
+                \common\models\Device::callCurl($url, $params, 'POST');
+                return $this->redirect(['view', 'id' => $model->uid]);
+            }
         }
 
         return $this->render('create', [

@@ -102,7 +102,7 @@ $this->params['breadcrumbs'][] = $this->title;
 </div>
 <script>
 $(document).ready(function(){
-    var stime = 0;
+    var stime = <?= time() ?>;
     var aid = 0;
     var gid = 0;
 
@@ -122,11 +122,7 @@ $(document).ready(function(){
     //定时访问
     setInterval(function(){
         if ($("#notice-container").attr('enable') == 1) {
-<<<<<<< HEAD
             getNotice();
-=======
-             getNotice();
->>>>>>> 40aa250bda66364a170d3f66c7c82d315098ea5c
         }
     }, 5000);
 
@@ -146,12 +142,15 @@ $(document).ready(function(){
             console.log(res.guests.length, "success");
             if (res.code == 200) {
                 $("#notice-container").html('');
-                $("#notice-container").show();
+                gid = res.gid;
+                aid = res.aid;
                 if (res.data != undefined && res.data.length > 0) {
+                    $("#notice-container").show();
                     noticeAttendance(res.data);
                 }
 
                 if (res.guests != undefined && res.guests.length > 0) {
+                    $("#notice-container").show();
                     noticeGuests(res.guests);
                 }
                 setTimeout(function(){ 

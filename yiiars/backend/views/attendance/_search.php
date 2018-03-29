@@ -45,8 +45,9 @@ use kartik\datetime\DateTimePicker;
             ] 
         ]); ?>
     </div>
-    <div class="col-xs-12">
+    <div class="col-xs-12" style="margin-top:10px;">
         <?= Html::submitButton(Yii::t('common', '导出'), ['class' => 'btn btn-primary']) ?>
+        <?= Html::a(Yii::t('common', '同步数据'),'/attendance/sync', ['class' => 'btn btn-success']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>
