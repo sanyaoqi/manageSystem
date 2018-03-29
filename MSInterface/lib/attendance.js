@@ -3,7 +3,7 @@
  */
 
 require("./ReturnConfig");
-// var edge = require('edge-js');
+var edge = require('edge-js');
 var AipFace = require('baidu-aip-sdk').face; //这个‘baidu-ai’就是上面自定义的package.json中名字
 var fs = require('fs');
 var MySQL  = require('../mysql/MySQL').MySQL;
@@ -62,6 +62,18 @@ exports.readAttMacList = function (req, callback) {
                             }
                         }
                         console.log(sql);
+//                        mysql.db.query(
+//                            sql,
+//                            function selectCb(err, results, fields) {
+//                                console.log(err, results);
+//                                if (err) {
+//                                    callback(returnWrong(err));
+//                                }
+//                                if(results) {
+//                                    callback(returnRight({}));
+//                                }
+//                            }
+//                        )
                     }
                 }
             );
@@ -108,7 +120,7 @@ exports.receivePicture = function (req, callback) {
                     });
                 mysql.db.query(
                     //若非员工，插入新数据：INSERT INTO `db_ars`.`tbl_guests` (`created_at`, `uuid`, `image`, `status`) VALUES ( '1521725598', '111111', 'http://xxxx.xxx.xxx/xxxxxxx', '0');
-                    "INSERT INTO `db_ars`.`xxx` (`created_at`, `uuid`, `image`, `status`) VALUES ( " + time + ", " + arr[i].uid + ", " + path + ", '0');",
+                    "INSERT INTO `db_ars`.`tbl_attendance` (`created_at`, `uuid`, `image`, `status`) VALUES ( " + time + ", " + arr[i].uid + ", " + path + ", '0');",
                     function selectCb(err, results, fields) {
                         console.log(err, results);
                         if (err) {
@@ -139,6 +151,19 @@ exports.receivePicture = function (req, callback) {
                                         console.log("保存成功！");
                                     }
                                 });
+                            mysql.db.query(
+                                //若非员工，插入新数据：INSERT INTO `db_ars`.`tbl_guests` (`created_at`, `uuid`, `image`, `status`) VALUES ( '1521725598', '111111', 'http://xxxx.xxx.xxx/xxxxxxx', '0');
+                                "INSERT INTO `db_ars`.`tbl_guests` (`created_at`, `uuid`, `image`, `status`) VALUES ( " + time + ", " + null + ", " + path + ", '0');",
+                                function selectCb(err, results, fields) {
+                                    console.log(err, results);
+                                    if (err) {
+                                        callback(returnWrong(err));
+                                    }
+                                    if(results) {
+                                        callback(returnRight({}));
+                                    }
+                                }
+                            )
                             return;
                         }
                         else {

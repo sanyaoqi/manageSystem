@@ -3,7 +3,7 @@
  */
 
 returnRight = function (result) {
-    return {code:0, result: result, message: ""};
+    return {code:200, result: result, message: ""};
 };
 returnWrong = function (message) {
     return {code:1, result: {}, message: message};

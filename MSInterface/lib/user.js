@@ -41,7 +41,7 @@ exports.readIDCard = function (req, callback) {
             callback(returnRight(json));
         }
         else {
-            callback(returnWrong(result.message));
+            callback(returnWrong(result.Message));
         }
     });
 };
@@ -63,5 +63,27 @@ exports.setUserPicture = function (req, callback) {
 };
 
 exports.addUserToAttMac = function (req, callback) {
-    callback(returnRight({}));
+    var read = edge.func({
+        assemblyFile: 'SDK/IDcard/ClassLibrary1.dll',             // assemblyFile为dll路径
+        atypeName: 'IDcard.Startup',   // RockyNamespace为命名空间，Study为类名
+//        assemblyFile: 'SDK/IDcard/ClassLibrary1/bin/Debug/ClassLibrary1.dll',             // assemblyFile为dll路径
+//        atypeName: 'IDcard.Startup',   // RockyNamespace为命名空间，Study为类名
+        methodName: 'ReadIDCardData'                     //Connect_Net GetGeneralLogData GetAllUserInfo
+    });
+
+// s为传递方法传递的参数，result为方法返回的结果
+    read ({}, function (error, result) {
+        if (error) {
+            callback(returnWrong(error));
+            return;
+        }
+
+        console.log("result === ", result); // Success
+        if (result.Code == '0') {
+
+        }
+        else {
+            callback(returnWrong(result.Message));
+        }
+    });
 };

@@ -122,11 +122,7 @@ $(document).ready(function(){
     //定时访问
     setInterval(function(){
         if ($("#notice-container").attr('enable') == 1) {
-<<<<<<< HEAD
             getNotice();
-=======
-             getNotice();
->>>>>>> 40aa250bda66364a170d3f66c7c82d315098ea5c
         }
     }, 5000);
 

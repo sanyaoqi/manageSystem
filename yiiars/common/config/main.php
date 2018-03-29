@@ -8,9 +8,7 @@ return [
     'language' => 'zh-CN',
     'timeZone' => 'Asia/Shanghai',
     'components' => [
-        'cache' => [
-            'class' => 'yii\caching\FileCache',
-        ],
+
         'db' => [
             'class' => 'yii\db\Connection',
             'charset' => 'utf8',
