@@ -36,7 +36,8 @@ use yii\widgets\ActiveForm;
 
     <!-- <?= $form->field($model, 'role')->textInput() ?> -->
 
-    <!-- <?= $form->field($model, 'auth_key')->textInput(['maxlength' => true]) ?> -->
+   <!-- <?= $form->field($model, 'auth_key')->textInput(['maxlength' => true]) ?> -->
+
 
     <!-- <?= $form->field($model, 'password_reset_token')->textInput(['maxlength' => true]) ?> -->
 
@@ -83,7 +84,7 @@ use yii\widgets\ActiveForm;
         event.preventDefault();
         $.ajax({
             url: 'http://node.ars.com/user/readIDCard',
-            type: 'GET',
+            type: 'POST',
             dataType: 'json',
             data: {type: 1},
         })
@@ -91,14 +92,15 @@ use yii\widgets\ActiveForm;
             console.log(data, "success");
             if (data.code == '200') {
                 var user_info = data.result;
-                $("#user-ic_card").val(user_info.IDnum);
+                $("#user-ic_card").val(user_info.IDNum);
                 $("#user-real_name").val(user_info.name);
                 $("#user-sex").val(user_info.sex);
-
                 console.log(user_info);
             }
         })
-        .fail(function() {
+        .fail(function(data) {
+                       console.log(data);
+
             console.log("error");
         })
         .always(function() {

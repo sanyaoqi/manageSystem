@@ -3,7 +3,7 @@
  */
 
 require("./ReturnConfig");
-// var edge = require('edge-js');
+var edge = require('edge-js');
 var AipFace = require('baidu-aip-sdk').face; //这个‘baidu-ai’就是上面自定义的package.json中名字
 var fs = require('fs');
 var MySQL  = require('../mysql/MySQL').MySQL;
@@ -42,10 +42,10 @@ exports.readAttMacList = function (req, callback) {
                         var index = 0;
                         if (results.length) {
                             var att = results[0];
-                            var date = att.date;
+                            var date = att.created_at;
                             for (var i = 0; i < result.length; i ++) {
                                 var idate = new Date(result[i].date);
-                                if (idate.getTime()/1000 > att.date) {
+                                if (idate.getTime()/1000 > date) {
                                     index = i;
                                     break;
                                 }
@@ -53,7 +53,8 @@ exports.readAttMacList = function (req, callback) {
                         }
                         for (var i = index; i < result.length; i ++) {
                             var idate = new Date(result[i].date);
-                            sql += "(" + result[i].sdwEnrollNumber + ", " + result[i].idwVerifyMode + "," + idate.getTime()/1000 + "," + new Date().getTime()/1000 + ")";
+                            var day = new Date(result[i].date.split(" ")[0]);
+                            sql += "(" + result[i].sdwEnrollNumber + ", " + result[i].idwVerifyMode + "," + parseInt(day.getTime()/1000) + "," +  parseInt(idate.getTime()/1000) + ")";
                             if (i != result.length - 1) {
                                 sql += ",";
                             }
@@ -62,12 +63,24 @@ exports.readAttMacList = function (req, callback) {
                             }
                         }
                         console.log(sql);
+                        mysql.db.query(
+                            sql,
+                            function selectCb(err, results, fields) {
+                                console.log(err, results);
+                                if (err) {
+                                    callback(returnWrong(err));
+                                }
+                                if(results) {
+                                    callback(returnRight({}));
+                                }
+                            }
+                        )
                     }
                 }
             );
 
             //插入新数据（多条）：INSERT INTO `db_ars`.`tbl_attendance` (`uid`,`type`,`date`,`created_at`) VALUES(1,1,1514736000,1521646049),(2,2,1514736000,1521646049),(3,1,1514736000,1521646049);
-            callback(returnRight({}));
+//            callback(returnRight({}));
         }
     });
 };
@@ -89,36 +102,14 @@ exports.receivePicture = function (req, callback) {
         console.log(JSON.stringify(result));
         var arr = result.result;
         var dataBuffer = new Buffer(file, 'base64');
-        var time = new Date().getTime()/1000;
+        var time = parseInt(new Date().getTime()/1000);
         var path = imagePath + time + ".jpg";
 
         for (var i = 0; i < result.result_num; i ++) {
             if (arr[i].scores[0] > 80) {
-                console.log(arr[i].uid, ", i see you !\ni see you !\ni see you !\ni see you !\n", new Date());
-                // 记录签到一次 先判断短时间内有没有这记录 TODO
-                fs.writeFile(
-                    path,
-                    dataBuffer,
-                    function(err) {
-                        if(err){
-                            console.log(err);
-                        }else{
-                            console.log("保存成功！");
-                        }
-                    });
-                mysql.db.query(
-                    //若非员工，插入新数据：INSERT INTO `db_ars`.`tbl_guests` (`created_at`, `uuid`, `image`, `status`) VALUES ( '1521725598', '111111', 'http://xxxx.xxx.xxx/xxxxxxx', '0');
-                    "INSERT INTO `db_ars`.`xxx` (`created_at`, `uuid`, `image`, `status`) VALUES ( " + time + ", " + arr[i].uid + ", " + path + ", '0');",
-                    function selectCb(err, results, fields) {
-                        console.log(err, results);
-                        if (err) {
-                            callback(returnWrong(err));
-                        }
-                        if(results) {
-                            callback(returnRight({}));
-                        }
-                    }
-                )
+                recordAttendance(arr, i, path, dataBuffer, time, function(res){
+                    callback(res);
+                })
             }
             else {
                 // 记录陌生人来访
@@ -130,7 +121,7 @@ exports.receivePicture = function (req, callback) {
                             console.log("detect ------>>>>>>>>", JSON.stringify(result));
                             console.log("i don't know who are you !", new Date());
                             fs.writeFile(
-                                path,
+                                "public/images/" + time + ".jpg",
                                 dataBuffer,
                                 function(err) {
                                     if(err){
@@ -139,10 +130,24 @@ exports.receivePicture = function (req, callback) {
                                         console.log("保存成功！");
                                     }
                                 });
+                            mysql.db.query(
+                                //若非员工，插入新数据：INSERT INTO `db_ars`.`tbl_guests` (`created_at`, `uid`, `image`, `status`) VALUES ( '1521725598', '111111', 'http://xxxx.xxx.xxx/xxxxxxx', '0');
+                                "INSERT INTO `db_ars`.`tbl_guests` (`created_at`, `uid`, `image`, `status`) VALUES ( " + time + ", " + null + ", '" + path + "', '0');",
+                                function selectCb(err, results, fields) {
+                                    console.log(err, results);
+                                    if (err) {
+                                        callback(returnWrong(err));
+                                    }
+                                    if(results) {
+                                        callback(returnRight({}));
+                                    }
+                                }
+                            )
                             return;
                         }
                         else {
                             console.log("花了，不算！");
+                            callback("aaa");
                         }
                     }
                 }).catch(function(err) {
@@ -151,9 +156,58 @@ exports.receivePicture = function (req, callback) {
                 });
             }
         }
-        callback(returnRight(result));
+//        callback(returnRight(result));
     }).catch(function(err) {
         // 如果发生网络错误
         console.log(err);
     });
 };
+
+function recordAttendance(arr, i, path, dataBuffer, time, callback) {
+    console.log(arr[i].uid, ", i see you !\ni see you !\ni see you !\ni see you !\n", new Date());
+    // 记录签到一次 先判断短时间内有没有这记录
+    mysql.db.query(
+        "SELECT created_at FROM db_ars.tbl_attendance where uid=" + arr[i].uid + " order by aid Desc limit 1",
+        function selectCb(err, results, fields) {
+            console.log(err, results);
+            if (err) {
+                callback(returnWrong(err));
+            }
+            if(results) {
+                var att = results[0];
+                var date = att.created_at;
+                var idate = new Date();
+                if (idate.getTime()/1000 - 30 * 60 < date) {
+                    // 重复了，不算
+                    console.log("重复了，不算");
+                    callback(returnWrong("re"));
+                    return;
+                }
+                fs.writeFile(
+                    "public/images/" + time + ".jpg",
+                    dataBuffer,
+                    function(err) {
+                        if(err){
+                            console.log(err);
+                        }else{
+                            console.log("保存成功！");
+                        }
+                    });
+                console.log(i, "---   这里 -------->>>>>>>", arr);
+                mysql.db.query(
+                    //若非员工，插入新数据：INSERT INTO `db_ars`.`tbl_guests` (`created_at`, `uid`, `image`, `status`) VALUES ( '1521725598', '111111', 'http://xxxx.xxx.xxx/xxxxxxx', '0');
+                    "INSERT INTO `db_ars`.`tbl_attendance` (`created_at`, `uid`, `status`) VALUES ( " + time + ", " + arr[i].uid + ", '0');",
+                    function selectCb(err, results, fields) {
+                        console.log(err, results);
+                        if (err) {
+                            callback(returnWrong(err));
+                        }
+                        if(results) {
+                            callback(returnRight({}));
+                        }
+                    }
+                )
+            }
+        }
+    )
+}

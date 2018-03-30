@@ -230,7 +230,7 @@ class AttendanceController extends Controller
 
     public function actionSync()
     {
-        $url = 'http://node.ars.com//attendence/readAttMacList';
+        $url = 'http://node.ars.com//attendance/readAttMacList';
         \common\models\Device::callCurl($url, [], 'POST');
         return $this->redirect(['index']);
     }
