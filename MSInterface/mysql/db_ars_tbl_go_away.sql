@@ -8,3 +8,6 @@ CREATE TABLE `db_ars`.`tbl_go_away` (
   `status` int(10) DEFAULT NULL COMMENT '状态',
   PRIMARY KEY (`gid`)
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COMMENT='签到记录表';
+
+ALTER TABLE `db_ars`.`tbl_go_away` 
+ADD COLUMN `aid` INT NULL COMMENT '对应的签到ID' AFTER `status`;

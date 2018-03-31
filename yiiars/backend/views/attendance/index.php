@@ -81,8 +81,10 @@ $this->params['breadcrumbs'][] = $this->title;
 
             // 'aid',
             'uid',
+            'date:date',
             'user.real_name',
-            'type',
+            // 'type',
+            'created_at:datetime',
             [
                 'attribute' => 'type',
                 'value' => function ($model) {
@@ -93,9 +95,17 @@ $this->params['breadcrumbs'][] = $this->title;
                     }
                 },
             ],
-            'date:date',
-            'created_at:datetime',
-
+            'goaway.created_at:datetime',
+            [
+                'attribute' => 'goaway.type',
+                'value' => function ($model) {
+                    if ($model->goaway && isset($model->getTypes()[$model->goaway->type])) {
+                        return $model->getTypes()[$model->goaway->type];
+                    } else {
+                        return '未知方式';
+                    }
+                },
+            ],
             ['class' => 'yii\grid\ActionColumn'],
         ],
     ]); ?>

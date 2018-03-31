@@ -73,4 +73,5 @@ return [
     'Face' => '面部识别',
     'Finger' => '指纹',
     'Card' => '刷卡',
+    'Go away datetime' => '退签时间',
 ];

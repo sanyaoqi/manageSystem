@@ -64,6 +64,11 @@ class Attendance extends \yii\db\ActiveRecord
         return $this->hasOne(Device::className(), ['did' => 'did']);
     }
 
+    public function getGoaway()
+    {
+        return $this->hasOne(GoAway::className(), ['aid' => 'aid']);
+    }
+
     public function getTypes()
     {
         return [

@@ -6,6 +6,8 @@ use Yii;
 use common\models\Guests;
 use common\models\Attendance;
 use common\models\AttendanceSearch;
+use common\models\GoAway;
+use common\models\GoAwaySearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
