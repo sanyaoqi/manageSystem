@@ -210,8 +210,11 @@ class AttendanceController extends Controller
             $excel->getProperties()->setCreated("invoker");
             $excel->getProperties()->setTitle('考勤记录'.date('Y-m-d H:i:s', time()));
             $excel->getActiveSheet()->setCellValue('A1', '姓名');
-            $excel->getActiveSheet()->setCellValue('B1', '时间');
-            $excel->getActiveSheet()->setCellValue('C1', '打卡方式');
+            $excel->getActiveSheet()->setCellValue('B1', '签到时间');
+            $excel->getActiveSheet()->setCellValue('C1', '签到方式');
+            $excel->getActiveSheet()->setCellValue('D1', '退签时间');
+            $excel->getActiveSheet()->setCellValue('E1', '退签方式');
+            $excel->getActiveSheet()->setCellValue('F1', '间隔时长');
             $i = 1;
             foreach($data as $item){
                 ++$i;
@@ -221,10 +224,27 @@ class AttendanceController extends Controller
                 //添加一个空格避免使用科学计数法
                 $excel->getActiveSheet()->setCellValue('A' . $i, isset($item->user->real_name)?$item->user->real_name:'匿名');
                 $excel->getActiveSheet()->setCellValue('B' . $i, date('Y-m-d h:m:s', $item->created_at));
-                $excel->getActiveSheet()->setCellValue('C' . $i, isset($types[$item->type])?$types[$item->type]:'未知方式');
+                $excel->getActiveSheet()->setCellValue('C' . $i, isset($types[$item->type])?$types[$item->type]:'');
+                if ($item->goaway) {
+                    $excel->getActiveSheet()->setCellValue('D' . $i, date('Y-m-d h:m:s', $item->goaway->created_at));
+                    $excel->getActiveSheet()->setCellValue('E' . $i, isset($types[$item->goaway->type])?$types[$item->goaway->type]:'');
+                    $work_time = $item->goaway->created_at - $item->created_at;
+                    $h = floor($work_time / 3600);
+                    $work_time = $work_time%3600;
+                    $m = floor($work_time/60);
+                    $s = $work_time%60;
+                    $work_time = (($h)? $h.'小时':'').(($m)? $m.'分钟':'').(($s)? $s.'秒':'');
+                    $excel->getActiveSheet()->setCellValue('F' . $i, $work_time);
+                } else {
+                    $excel->getActiveSheet()->setCellValue('D' . $i, '');
+                    $excel->getActiveSheet()->setCellValue('E' . $i, '');
+                    $excel->getActiveSheet()->setCellValue('F' . $i, '');
+                }
+                
             }
             $write = new \PHPExcel_Writer_Excel2007($excel);
-            return $write->save('php://output');
+            $write->save('php://output');
+            exit;
         } else{
             return $this->redirect('/attendance/index');
         }
