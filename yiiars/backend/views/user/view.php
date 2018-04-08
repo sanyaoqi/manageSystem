@@ -27,6 +27,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'id_card',
             'fingerprint',
             'ic_card',
+            'role',
             'status',
         ],
     ]) ?>

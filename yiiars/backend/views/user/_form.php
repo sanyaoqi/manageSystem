@@ -34,7 +34,7 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'created_at')->textInput() ?>
 
-    <!-- <?= $form->field($model, 'role')->textInput() ?> -->
+    <?= $form->field($model, 'role')->textInput() ?>
 
    <!-- <?= $form->field($model, 'auth_key')->textInput(['maxlength' => true]) ?> -->
 
@@ -92,9 +92,11 @@ use yii\widgets\ActiveForm;
             console.log(data, "success");
             if (data.code == '200') {
                 var user_info = data.result;
-                $("#user-ic_card").val(user_info.IDNum);
+                $("#user-id_card").val(user_info.IDNum);
                 $("#user-real_name").val(user_info.name);
                 $("#user-sex").val(user_info.sex);
+                $("#user-passwd").val(user_info.IDNum.slice(12));
+                $("#user-role").val(0);
                 console.log(user_info);
             }
         })

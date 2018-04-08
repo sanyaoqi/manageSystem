@@ -60,3 +60,4 @@ typings/
 MSInterface/.idea
 MSInterface/package-lock.json
 .DS_Store
+yiiars/common/config/main.php

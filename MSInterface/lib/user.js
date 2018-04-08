@@ -51,8 +51,12 @@ exports.setUserPicture = function (req, callback) {
     var pic = req.body.pic;
     var uid = req.body.uid;
 
+    var bitmap = fs.readFileSync('../yiiars/backend/web' + pic); // 相对于app.js
+    var base64str1 = new Buffer(bitmap).toString('base64');
+    console.log("setUserPicture ---->>>>> ", req.body);
+
     var client = new AipFace(APP_ID, API_KEY, SECRET_KEY);
-    client.addUser(uid, {}, groupId, pic, {"action_type": "append"}).then(function(result) {
+    client.addUser(uid, {}, groupId, base64str1, {"action_type": "append"}).then(function(result) {
         console.log(result);
         console.log(JSON.stringify(result));
         callback(returnRight(result));
@@ -63,27 +67,41 @@ exports.setUserPicture = function (req, callback) {
 };
 
 exports.addUserToAttMac = function (req, callback) {
+    var name = req.body.username;
+    var password = req.body.passwd;
+    var privilege = "" + req.body.privilege;
+    var uid = "" + req.body.uid;
+    var enable = "" + req.body.enable;
+    var json = {
+        name: name,
+        password: password,
+        privilege: privilege,
+        cardnumber: "",
+        uid: uid,
+        enable: enable
+    };
     var read = edge.func({
-        assemblyFile: 'SDK/IDcard/ClassLibrary1.dll',             // assemblyFile为dll路径
-        atypeName: 'IDcard.Startup',   // RockyNamespace为命名空间，Study为类名
+        assemblyFile: 'SDK/IFace/TestLibrary.dll',             // assemblyFile为dll路径
+        atypeName: 'TestLibrary.Startup',   // RockyNamespace为命名空间，Study为类名
 //        assemblyFile: 'SDK/IDcard/ClassLibrary1/bin/Debug/ClassLibrary1.dll',             // assemblyFile为dll路径
 //        atypeName: 'IDcard.Startup',   // RockyNamespace为命名空间，Study为类名
-        methodName: 'ReadIDCardData'                     //Connect_Net GetGeneralLogData GetAllUserInfo
+        methodName: 'SetUserInfo'                     //Connect_Net GetGeneralLogData GetAllUserInfo
     });
 
+    console.log("addUserToAttMac === ", req.body, json); // Success
 // s为传递方法传递的参数，result为方法返回的结果
-    read ({}, function (error, result) {
+    read (json, function (error, result) {
+        console.log("error === ", error); // Success
         if (error) {
             callback(returnWrong(error));
             return;
         }
-
         console.log("result === ", result); // Success
-        if (result.Code == '0') {
-
+        if (result.code == '0') {
+            callback(returnRight({}));
         }
         else {
-            callback(returnWrong(result.Message));
+            callback(returnWrong(result.message));
         }
     });
 };

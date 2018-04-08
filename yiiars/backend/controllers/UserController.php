@@ -87,13 +87,13 @@ class UserController extends Controller
                     'privilege' => $model->role,
                     'enable' => true, 
                 ];
-                \common\models\Device::callCurl($url, $params, 'POST');
+                \common\models\Device::callCurl($url, json_encode($params), 'POST');
                 $url = 'http://node.ars.com/user/setUserPicture';
                 $params = [
                     'uid' => $model->uid,
                     'pic' => $model->cover,
                 ];
-                \common\models\Device::callCurl($url, $params, 'POST');
+                \common\models\Device::callCurl($url, json_encode($params), 'POST');
                 return $this->redirect(['view', 'id' => $model->uid]);
             }
         }

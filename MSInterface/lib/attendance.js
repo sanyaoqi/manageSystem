@@ -85,6 +85,9 @@ exports.readAttMacList = function (req, callback) {
     });
 };
 
+function findNewAttendance(last, arr, callback) {
+
+}
 
 exports.receivePicture = function (req, callback) {
     // console.log("req.body --->>>", req.body);
@@ -103,57 +106,21 @@ exports.receivePicture = function (req, callback) {
         var arr = result.result;
         var dataBuffer = new Buffer(file, 'base64');
         var time = parseInt(new Date().getTime()/1000);
+        var theTime = new Date();
+        var day = parseInt(new Date(theTime.getYear() + "-" + theTime.getMonth() + "-" + theTime.getDate()).getTime()/1000);
         var path = imagePath + time + ".jpg";
 
         for (var i = 0; i < result.result_num; i ++) {
             if (arr[i].scores[0] > 80) {
-                recordAttendance(arr, i, path, dataBuffer, time, function(res){
+                recordAttendance(arr, i, path, dataBuffer, time, day, function(res){
                     callback(res);
                 })
             }
             else {
                 // 记录陌生人来访
-                client.detect(file, {"face_fields":"faceshape,qualities"}).then(function(result) {
-                    var arrDetect = result.result;
-                    for (var i = 0; i < result.result_num; i ++) {
-                        if (arrDetect[i].face_probability > 0.999 && arrDetect[i].blur < 0.7 && arrDetect[i].type.human > 0.999) {
-                            console.log("detect ------>>>>>>>>", result);
-                            console.log("detect ------>>>>>>>>", JSON.stringify(result));
-                            console.log("i don't know who are you !", new Date());
-                            fs.writeFile(
-                                "public/images/" + time + ".jpg",
-                                dataBuffer,
-                                function(err) {
-                                    if(err){
-                                        console.log(err);
-                                    }else{
-                                        console.log("保存成功！");
-                                    }
-                                });
-                            mysql.db.query(
-                                //若非员工，插入新数据：INSERT INTO `db_ars`.`tbl_guests` (`created_at`, `uid`, `image`, `status`) VALUES ( '1521725598', '111111', 'http://xxxx.xxx.xxx/xxxxxxx', '0');
-                                "INSERT INTO `db_ars`.`tbl_guests` (`created_at`, `uid`, `image`, `status`) VALUES ( " + time + ", " + null + ", '" + path + "', '0');",
-                                function selectCb(err, results, fields) {
-                                    console.log(err, results);
-                                    if (err) {
-                                        callback(returnWrong(err));
-                                    }
-                                    if(results) {
-                                        callback(returnRight({}));
-                                    }
-                                }
-                            )
-                            return;
-                        }
-                        else {
-                            console.log("花了，不算！");
-                            callback("aaa");
-                        }
-                    }
-                }).catch(function(err) {
-                    // 如果发生网络错误
-                    console.log(err);
-                });
+                recordGuest(client, file, path, dataBuffer, time, day, function(res){
+                    callback(res);
+                })
             }
         }
 //        callback(returnRight(result));
@@ -163,7 +130,7 @@ exports.receivePicture = function (req, callback) {
     });
 };
 
-function recordAttendance(arr, i, path, dataBuffer, time, callback) {
+function recordAttendance(arr, i, path, dataBuffer, time, day, callback) {
     console.log(arr[i].uid, ", i see you !\ni see you !\ni see you !\ni see you !\n", new Date());
     // 记录签到一次 先判断短时间内有没有这记录
     mysql.db.query(
@@ -196,7 +163,7 @@ function recordAttendance(arr, i, path, dataBuffer, time, callback) {
                 console.log(i, "---   这里 -------->>>>>>>", arr);
                 mysql.db.query(
                     //若非员工，插入新数据：INSERT INTO `db_ars`.`tbl_guests` (`created_at`, `uid`, `image`, `status`) VALUES ( '1521725598', '111111', 'http://xxxx.xxx.xxx/xxxxxxx', '0');
-                    "INSERT INTO `db_ars`.`tbl_attendance` (`created_at`, `uid`, `status`) VALUES ( " + time + ", " + arr[i].uid + ", '0');",
+                    "INSERT INTO `db_ars`.`tbl_attendance` (`created_at`, `date`, `uid`, `status`) VALUES ( " + time + ", " + day + ", " + arr[i].uid + ", '0');",
                     function selectCb(err, results, fields) {
                         console.log(err, results);
                         if (err) {
@@ -210,4 +177,48 @@ function recordAttendance(arr, i, path, dataBuffer, time, callback) {
             }
         }
     )
+}
+
+function recordGuest(client, file, path, dataBuffer, time, day, callback) {
+    client.detect(file, {"face_fields":"faceshape,qualities"}).then(function(result) {
+        var arrDetect = result.result;
+        for (var i = 0; i < result.result_num; i ++) {
+            if (arrDetect[i].face_probability > 0.999 && arrDetect[i].blur < 0.7 && arrDetect[i].type.human > 0.999) {
+                console.log("detect ------>>>>>>>>", result);
+                console.log("detect ------>>>>>>>>", JSON.stringify(result));
+                console.log("i don't know who are you !", new Date());
+                fs.writeFile(
+                    "public/images/" + time + ".jpg",
+                    dataBuffer,
+                    function(err) {
+                        if(err){
+                            console.log(err);
+                        }else{
+                            console.log("保存成功！");
+                        }
+                    });
+                mysql.db.query(
+                    //若非员工，插入新数据：INSERT INTO `db_ars`.`tbl_guests` (`created_at`, `uid`, `image`, `status`) VALUES ( '1521725598', '111111', 'http://xxxx.xxx.xxx/xxxxxxx', '0');
+                    "INSERT INTO `db_ars`.`tbl_guests` (`created_at`, `date`, `uid`, `image`, `status`) VALUES ( " + time + ", " + day + ", " + null + ", '" + path + "', '0');",
+                    function selectCb(err, results, fields) {
+                        console.log(err, results);
+                        if (err) {
+                            callback(returnWrong(err));
+                        }
+                        if(results) {
+                            callback(returnRight({}));
+                        }
+                    }
+                )
+                return;
+            }
+            else {
+                console.log("花了，不算！");
+                callback("aaa");
+            }
+        }
+    }).catch(function(err) {
+            // 如果发生网络错误
+            console.log(err);
+        });
 }
