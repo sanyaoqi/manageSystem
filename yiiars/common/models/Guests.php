@@ -48,4 +48,12 @@ class Guests extends \yii\db\ActiveRecord
             'status' => Yii::t('common', 'Status'),
         ];
     }
+
+    public static function getTodayTotal()
+    {
+        $query = self::find();
+        $time = strtotime(date('Y-m-d',time()));
+        $query->where(['>=', 'created_at', $time]);
+        return $query->count();
+    }
 }
