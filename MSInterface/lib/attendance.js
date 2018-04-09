@@ -8,8 +8,10 @@ var AipFace = require('baidu-aip-sdk').face; //这个‘baidu-ai’就是上面�
 var fs = require('fs');
 var MySQL  = require('../mysql/MySQL').MySQL;
 var mysql = new MySQL();
+var attConfigJson = require('../public/json/config.json');
 
 exports.readAttMacList = function (req, callback) {
+    console.log(attConfigJson);
     var readAtt = edge.func({
 //     assemblyFile: 'SDK/IFace_x64/AccessControl/TestLibrary/bin/Debug/TestLibrary.dll',             // assemblyFile为dll路径
 //     atypeName: 'TestLibrary.Startup',   // RockyNamespace为命名空间，Study为类名
@@ -26,23 +28,26 @@ exports.readAttMacList = function (req, callback) {
         }
         console.log("result --->>>", result);
         if (typeof result[0] == 'string') {
-            callback(returnWrong(result.message));
+            callback(returnWrong(result[0]));
         }
         else {
             // 插入数据
             mysql.db.query(
-                'SELECT * FROM db_ars.tbl_attendance order by aid desc limit 1;',
+                'SELECT * FROM db_ars.tbl_attendance where type=0 order by aid desc limit 1;',
                 function selectCb(err, results, fields) {
                     console.log(err, results);
                     if (err) {
                         callback(returnWrong(err));
                     }
                     if(results) {
-                        var sql = "INSERT INTO `db_ars`.`tbl_attendance` (`uid`,`type`,`date`,`created_at`) VALUES ";
-                        var index = 0;
+                        var date = "";
                         if (results.length) {
-                            var att = results[0];
-                            var date = att.created_at;
+                            // date = new Date( results[0].created_at * 1000 );//.转换成毫秒
+                            date = results[0].created_at;//.转换成毫秒
+                            console.log( date );
+                        }
+                        var index = 0;
+                        if (date != "") {
                             for (var i = 0; i < result.length; i ++) {
                                 var idate = new Date(result[i].date);
                                 if (idate.getTime()/1000 > date) {
@@ -51,30 +56,10 @@ exports.readAttMacList = function (req, callback) {
                                 }
                             }
                         }
-                        for (var i = index; i < result.length; i ++) {
-                            var idate = new Date(result[i].date);
-                            var day = new Date(result[i].date.split(" ")[0]);
-                            sql += "(" + result[i].sdwEnrollNumber + ", " + result[i].idwVerifyMode + "," + parseInt(day.getTime()/1000) + "," +  parseInt(idate.getTime()/1000) + ")";
-                            if (i != result.length - 1) {
-                                sql += ",";
-                            }
-                            else {
-                                sql += ";";
-                            }
-                        }
-                        console.log(sql);
-                        mysql.db.query(
-                            sql,
-                            function selectCb(err, results, fields) {
-                                console.log(err, results);
-                                if (err) {
-                                    callback(returnWrong(err));
-                                }
-                                if(results) {
-                                    callback(returnRight({}));
-                                }
-                            }
-                        )
+                        console.log(index , result.length);
+                        findNewAttendance(index, result.length, result, function(res){
+                            callback(res);
+                        });
                     }
                 }
             );
@@ -85,8 +70,153 @@ exports.readAttMacList = function (req, callback) {
     });
 };
 
-function findNewAttendance(last, arr, callback) {
+function findNewAttendance(index, length, arr, callback) {
+    if (index == length) {
+        callback(returnRight({}));
+    }
+    else {
+        // 查找当天该用户有没有签到，有的话算签退，没有的话，插入签到
+        console.log(index, "  findNewAttendance -----------------------------------------------   findNewAttendance");
+        var idate = new Date(arr[index].date);
+        var day = new Date(arr[index].date.split(" ")[0]);
+        mysql.db.query(
+            'SELECT * FROM db_ars.tbl_attendance where date=' + parseInt(day.getTime()/1000) + ' and uid=' + arr[index].sdwEnrollNumber,
+            function selectCb(err, results, fields) {
+                console.log(err, results);
+                if (err) {
+                    callback(returnWrong(err));
+                }
+                if(results) {
+                    if (results.length) {
+                        // 有数据 算做签退
+                        addGoAwayData(results[0], arr[index], function(res){
+                            if (res) {
+                                findNewAttendance(index + 1, length, arr, callback);
+                            }
+                        })
+                    }
+                    else {
+                        // 没数据，判断一下是签退还是签到
+                        var middle = new Date(arr[index].date.split(" ")[0] + ' ' + attConfigJson['1'].middle);
+                        if (idate.getTime() > middle.getTime()) {
+                            // 算签退
+                            addTwoData(arr[index], function(res){
+                                if (res) {
+                                    findNewAttendance(index + 1, length, arr, callback);
+                                }
+                            });
+                        }
+                        else {
+                            insertData(arr[index], function(res){
+                                if (res) {
+                                    findNewAttendance(index + 1, length, arr, callback);
+                                }
+                            });
+                        }
+                    }
+                }
+            }
+        );
+    }
+}
 
+function insertData(data, callback) {
+    console.log("insertData -------------------------------------------   insertData");
+    var sql = "INSERT INTO `db_ars`.`tbl_attendance` (`uid`,`type`,`date`,`created_at`) VALUES ";
+    var idate = new Date(data.date);
+    var day = new Date(data.date.split(" ")[0]);
+    sql += "(" + data.sdwEnrollNumber + ", " + "0" + "," + parseInt(day.getTime()/1000) + "," +  parseInt(idate.getTime()/1000) + ")";
+    console.log("insertData --->>> ", sql);
+    mysql.db.query(
+        sql,
+        function selectCb(err, results, fields) {
+            console.log(err, results);
+            if (err) {
+                callback(false);
+            }
+            if(results) {
+                callback(true);
+            }
+        }
+    );
+}
+
+function addGoAwayData(result, data, callback) {
+    // result 是签到数据，data是签退数据 先查找是否有签退的，没有插入，有就更新
+    console.log("addGoAwayData -----------------------------------------------   addGoAwayData");
+    mysql.db.query(
+        'SELECT * FROM db_ars.tbl_go_away where aid=' + result.aid,
+        function selectCb(err, results, fields) {
+            console.log(err, results);
+            if (err) {
+                callback(false);
+            }
+            if(results) {
+                if (results.length) {
+                    // 有数据 更新
+                    console.log("addGoAwayData -----更新");
+                    callback(true);
+                }
+                else {
+                    // 没数据，插入
+                    var sql = "INSERT INTO `db_ars`.`tbl_go_away` (`aid`,`uid`,`type`,`date`,`created_at`) VALUES ";
+                    var idate = new Date(data.date);
+                    var day = new Date(data.date.split(" ")[0]);
+                    sql += "(" + result.aid + ", " + data.sdwEnrollNumber + ", " + "0" + "," + parseInt(day.getTime()/1000) + "," +  parseInt(idate.getTime()/1000) + ")";
+                    console.log("addGoAwayData --->>> ", sql);
+                    mysql.db.query(
+                        sql,
+                        function selectCb(err, results, fields) {
+                            console.log(err, results);
+                            if (err) {
+                                callback(false);
+                            }
+                            if(results) {
+                                callback(true);
+                            }
+                        }
+                    );
+                }
+            }
+        }
+    );
+}
+
+function addTwoData(data, callback) {
+    console.log("addTwoData -------------------------------------------   addTwoData");
+    var sql = "INSERT INTO `db_ars`.`tbl_attendance` (`uid`,`type`,`date`,`created_at`) VALUES ";
+    var idate = new Date(data.date.split(" ")[0] + ' ' + attConfigJson['1'].start);
+    var day = new Date(data.date.split(" ")[0]);
+    sql += "(" + data.sdwEnrollNumber + ", " + "3" + "," + parseInt(day.getTime()/1000) + "," +  parseInt(idate.getTime()/1000) + ")";
+    console.log("addTwoData --->>> ", sql);
+    mysql.db.query(
+        sql,
+        function selectCb(err, results, fields) {
+            console.log(err, results);
+            if (err) {
+                callback(false);
+            }
+            if(results) {
+                sql = "INSERT INTO `db_ars`.`tbl_go_away` (`aid`,`uid`,`type`,`date`,`created_at`) VALUES ";
+                idate = new Date(data.date);
+                day = new Date(data.date.split(" ")[0]);
+                sql += "(" + results.insertId + ", " + data.sdwEnrollNumber + ", " + "0" + "," + parseInt(day.getTime()/1000) + "," +  parseInt(idate.getTime()/1000) + ")";
+                console.log("addGoAwayData --->>> ", sql);
+                mysql.db.query(
+                    sql,
+                    function selectCb(err, results, fields) {
+                        console.log(err, results);
+                        if (err) {
+                            callback(false);
+                        }
+                        if(results) {
+                            callback(true);
+                        }
+                    }
+                );
+            }
+        }
+    );
 }
 
 exports.receivePicture = function (req, callback) {
@@ -163,7 +293,7 @@ function recordAttendance(arr, i, path, dataBuffer, time, day, callback) {
                 console.log(i, "---   这里 -------->>>>>>>", arr);
                 mysql.db.query(
                     //若非员工，插入新数据：INSERT INTO `db_ars`.`tbl_guests` (`created_at`, `uid`, `image`, `status`) VALUES ( '1521725598', '111111', 'http://xxxx.xxx.xxx/xxxxxxx', '0');
-                    "INSERT INTO `db_ars`.`tbl_attendance` (`created_at`, `date`, `uid`, `status`) VALUES ( " + time + ", " + day + ", " + arr[i].uid + ", '0');",
+                    "INSERT INTO `db_ars`.`tbl_attendance` (`created_at`, `date`, `uid`, `status`) VALUES ( " + time + ", " + day + ", " + arr[i].uid + ", '1');",
                     function selectCb(err, results, fields) {
                         console.log(err, results);
                         if (err) {
@@ -199,7 +329,7 @@ function recordGuest(client, file, path, dataBuffer, time, day, callback) {
                     });
                 mysql.db.query(
                     //若非员工，插入新数据：INSERT INTO `db_ars`.`tbl_guests` (`created_at`, `uid`, `image`, `status`) VALUES ( '1521725598', '111111', 'http://xxxx.xxx.xxx/xxxxxxx', '0');
-                    "INSERT INTO `db_ars`.`tbl_guests` (`created_at`, `date`, `uid`, `image`, `status`) VALUES ( " + time + ", " + day + ", " + null + ", '" + path + "', '0');",
+                    "INSERT INTO `db_ars`.`tbl_guests` (`created_at`, `date`, `uid`, `image`, `status`) VALUES ( " + time + ", " + day + ", " + null + ", '" + path + "', '1');",
                     function selectCb(err, results, fields) {
                         console.log(err, results);
                         if (err) {
