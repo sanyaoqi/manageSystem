@@ -74,4 +74,9 @@ return [
     'Finger' => '指纹',
     'Card' => '刷卡',
     'Go away datetime' => '退签时间',
+    'Total user number' => '总用户数',
+    'Total device number' => '总设备数',
+    'Today user attendance' => '今日签到人数',
+    'Today guests num' => '今日访客人数',
+    'Sign out' => '退出',
 ];

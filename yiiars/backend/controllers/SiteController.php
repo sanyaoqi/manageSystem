@@ -6,6 +6,10 @@ use yii\web\Controller;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
 use common\models\LoginForm;
+use common\models\User;
+use common\models\Device;
+use common\models\Attendance;
+use common\models\Guests;
 
 /**
  * Site controller
@@ -35,7 +39,7 @@ class SiteController extends Controller
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
-                    'logout' => ['post'],
+                    // 'logout' => ['post'],
                 ],
             ],
         ];
@@ -60,7 +64,18 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        return $this->render('index');
+        $total = [];
+        $total['users'] = \common\models\User::find()->where(['status' => User::STATUS_ACTIVE])->count();
+        $total['device'] = \common\models\Device::find()->count();
+
+        $total['today_attend'] = Attendance::getTodayTotal();
+
+
+        $total['guests'] = Guests::getTodayTotal();
+
+        return $this->render('index', [
+            'total' => $total
+        ]);
     }
 
     /**

@@ -1,6 +1,6 @@
 <header class="main-header">
   <!-- Logo -->
-  <a href="#" class="logo">
+  <a href="/" class="logo">
     <!-- mini logo for sidebar mini 50x50 pixels -->
     <span class="logo-mini"><b>A</b>SR</span>
     <!-- logo for regular state and mobile devices -->
@@ -12,11 +12,9 @@
     <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
       <span class="sr-only"><?= Yii::t('common', 'Toggle navigation'); ?></span>
     </a>
-    <!-- Navbar Right Menu -->
     <div class="navbar-custom-menu">
       <ul class="nav navbar-nav">
-        <!-- Messages: style can be found in dropdown.less-->
-        <li class="dropdown messages-menu">
+        <!-- <li class="dropdown messages-menu">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">
             <i class="fa fa-envelope-o"></i>
             <span class="label label-success">4</span>
@@ -24,9 +22,7 @@
           <ul class="dropdown-menu">
             <li class="header">You have 4 messages</li>
             <li>
-              <!-- inner menu: contains the actual data -->
               <ul class="menu">
-                <li><!-- start message -->
                   <a href="#">
                     <div class="pull-left">
                       <img src="/dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">
@@ -38,7 +34,6 @@
                     <p>Why not buy a new awesome theme?</p>
                   </a>
                 </li>
-                <!-- end message -->
                 <li>
                   <a href="#">
                     <div class="pull-left">
@@ -92,7 +87,6 @@
             <li class="footer"><a href="#">See All Messages</a></li>
           </ul>
         </li>
-        <!-- Notifications: style can be found in dropdown.less -->
         <li class="dropdown notifications-menu">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">
             <i class="fa fa-bell-o"></i>
@@ -101,7 +95,6 @@
           <ul class="dropdown-menu">
             <li class="header">You have 10 notifications</li>
             <li>
-              <!-- inner menu: contains the actual data -->
               <ul class="menu">
                 <li>
                   <a href="#">
@@ -134,7 +127,6 @@
             <li class="footer"><a href="#">View all</a></li>
           </ul>
         </li>
-        <!-- Tasks: style can be found in dropdown.less -->
         <li class="dropdown tasks-menu">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">
             <i class="fa fa-flag-o"></i>
@@ -143,9 +135,8 @@
           <ul class="dropdown-menu">
             <li class="header">You have 9 tasks</li>
             <li>
-              <!-- inner menu: contains the actual data -->
               <ul class="menu">
-                <li><!-- Task item -->
+                <li>
                   <a href="#">
                     <h3>
                       Design some buttons
@@ -159,8 +150,7 @@
                     </div>
                   </a>
                 </li>
-                <!-- end task item -->
-                <li><!-- Task item -->
+                <li>
                   <a href="#">
                     <h3>
                       Create a nice theme
@@ -174,8 +164,7 @@
                     </div>
                   </a>
                 </li>
-                <!-- end task item -->
-                <li><!-- Task item -->
+                <li>
                   <a href="#">
                     <h3>
                       Some task I need to do
@@ -189,8 +178,7 @@
                     </div>
                   </a>
                 </li>
-                <!-- end task item -->
-                <li><!-- Task item -->
+                <li>
                   <a href="#">
                     <h3>
                       Make beautiful transitions
@@ -204,22 +192,19 @@
                     </div>
                   </a>
                 </li>
-                <!-- end task item -->
               </ul>
             </li>
             <li class="footer">
               <a href="#">View all tasks</a>
             </li>
           </ul>
-        </li>
-        <!-- User Account: style can be found in dropdown.less -->
+        </li> -->
         <li class="dropdown user user-menu">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">
             <img src="/dist/img/user2-160x160.jpg" class="user-image" alt="User Image">
             <span class="hidden-xs"><?= (isset($user->real_name))?$user->real_name:''; ?></span>
           </a>
           <ul class="dropdown-menu">
-            <!-- User image -->
             <li class="user-header">
               <img src="/dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">
               <p>
@@ -227,8 +212,7 @@
                 <small><?= Yii::t('common', 'Member since ').Yii::$app->formatter->asDate(isset($user->created_at)?$user->created_at:0, 'php:Y/m') ?></small>
               </p>
             </li>
-            <!-- Menu Body -->
-            <li class="user-body">
+            <!-- <li class="user-body">
               <div class="row">
                 <div class="col-xs-4 text-center">
                   <a href="#">Followers</a>
@@ -240,23 +224,20 @@
                   <a href="#">Friends</a>
                 </div>
               </div>
-              <!-- /.row -->
-            </li>
-            <!-- Menu Footer-->
+            </li> -->
             <li class="user-footer">
-              <div class="pull-left">
+             <!--  <div class="pull-left">
                 <a href="#" class="btn btn-default btn-flat">Profile</a>
-              </div>
+              </div> -->
               <div class="pull-right">
-                <a href="#" class="btn btn-default btn-flat">Sign out</a>
+                <a href="/site/logout" class="btn btn-default btn-flat"><?= Yii::t('common', 'Sign out'); ?></a>
               </div>
             </li>
           </ul>
         </li>
-        <!-- Control Sidebar Toggle Button -->
-        <li>
+       <!--  <li>
            <a href="#" data-toggle="control-sidebar"><i class="fa fa-gears"></i></a>
-        </li>
+        </li> -->
       </ul>
     </div>
 

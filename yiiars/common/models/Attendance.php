@@ -77,4 +77,14 @@ class Attendance extends \yii\db\ActiveRecord
             static::TYPE_CARD => Yii::t('common', 'Card'),
         ];
     }
+
+    public static function getTodayTotal()
+    {
+        $query = self::find();
+        $time = strtotime(date('Y-m-d',time()));
+        // var_dump($time);exit;
+        $query->where(['date' => $time]);
+        $query->groupBy('uid');
+        return $query->count();
+    }
 }
