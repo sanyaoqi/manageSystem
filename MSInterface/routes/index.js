@@ -11,7 +11,7 @@ router.get('/', function(req, res, next) {
 });
 
 router.use('*', function(req, res, next) {
-    console.log("router --------->>> ", req.originalUrl); // '/admin/new'
+    // console.log("router --------->>> ", req.originalUrl); // '/admin/new'
     // console.log(req.baseUrl); // '/admin'
     // console.log(req.path); // '/new'
     // console.log(req.baseUrl.split("/")); // '/new'
@@ -26,12 +26,12 @@ module.exports = router;
 
 
 var testCommand = function (req, res, callback) {
-    console.log("bbb --->>> ", req.method);
-    console.log(req.originalUrl); // '/admin/new'
-    console.log(req.baseUrl); // '/admin'
-    console.log("path --->>>", req.path); // '/new'
-    console.log(req.body); // '/new'
-    console.log(req.query); // '/new'
+    // console.log("bbb --->>> ", req.method);
+    // console.log(req.originalUrl); // '/admin/new'
+    // console.log(req.baseUrl); // '/admin'
+    // console.log("path --->>>", req.path); // '/new'
+    // console.log(req.body); // '/new'
+    // console.log(req.query); // '/new'
     if (req.method == "POST") {
         logger.debug("req.body:", req.body);
         logger.debug("req.query:", req.query);

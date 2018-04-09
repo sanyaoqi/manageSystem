@@ -51,6 +51,10 @@ exports.setUserPicture = function (req, callback) {
     var pic = req.body.pic;
     var uid = req.body.uid;
 
+    if (pic == "") {
+        callback(returnWrong("没有图片"));
+        return;
+    }
     var bitmap = fs.readFileSync('../yiiars/backend/web' + pic); // 相对于app.js
     var base64str1 = new Buffer(bitmap).toString('base64');
     console.log("setUserPicture ---->>>>> ", req.body);
@@ -78,7 +82,9 @@ exports.addUserToAttMac = function (req, callback) {
         privilege: privilege,
         cardnumber: "",
         uid: uid,
-        enable: enable
+        enable: enable,
+        "IP":attMachineIP,
+        "Port":attMachinePort
     };
     var read = edge.func({
         assemblyFile: 'SDK/IFace/TestLibrary.dll',             // assemblyFile为dll路径

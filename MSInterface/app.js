@@ -24,7 +24,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // app.all('/php', php);
 app.all('*', index);
-app.post('*', index);
+// app.post('*', index);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -40,13 +40,13 @@ app.use(function(err, req, res, next) {
   // res.locals.error = req.app.get('env') === 'development' ? err : {};
 
   // render the error page
-    console.log("err --->>> ", err);
-    console.log("bbb --->>> ", req.method);
-    console.log("err --->>> ", req.originalUrl); // '/admin/new'
-    console.log("err --->>> ", req.baseUrl); // '/admin'
-    console.log("path --->>>", req.path); // '/new'
-    console.log(req.body); // '/new'
-    console.log(req.query); // '/new'
+  //  console.log("err --->>> ", err);
+  //  console.log("bbb --->>> ", req.method);
+  //  console.log("err --->>> ", req.originalUrl); // '/admin/new'
+  //  console.log("err --->>> ", req.baseUrl); // '/admin'
+  //  console.log("path --->>>", req.path); // '/new'
+  //  console.log(req.body); // '/new'
+  //  console.log(req.query); // '/new'
 //    console.log(req);
   res.status(err.status || 500);
   res.send({code: err.status, message: '拼错了吧，亲！'});
