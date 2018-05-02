@@ -79,4 +79,5 @@ return [
     'Today user attendance' => '今日签到人数',
     'Today guests num' => '今日访客人数',
     'Sign out' => '退出',
+    'Auto' => '自动补签',
 ];

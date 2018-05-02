@@ -19,6 +19,7 @@ class Attendance extends \yii\db\ActiveRecord
     const TYPE_FINGER = 0;  //指纹
     const TYPE_FACE = 1;    //面部识别
     const TYPE_CARD = 2;    //刷卡
+    const TYPE_AUTO = 3;    //刷卡
 
     /**
      * @inheritdoc
@@ -75,6 +76,7 @@ class Attendance extends \yii\db\ActiveRecord
             static::TYPE_FINGER => Yii::t('common', 'Finger'),
             static::TYPE_FACE => Yii::t('common', 'Face'),
             static::TYPE_CARD => Yii::t('common', 'Card'),
+            static::TYPE_AUTO => Yii::t('common', 'Auto'),
         ];
     }
 
